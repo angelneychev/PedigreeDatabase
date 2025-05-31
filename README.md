@@ -73,10 +73,39 @@ git clone <repository-url>
 cd PedigreeDatabase
 ```
 
-2. **Install dependencies**
+
+2. **(Recommended) Create and activate a virtual environment**
+
+On Windows PowerShell:
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+On Linux/macOS:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+3. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
+
+> **Always activate the virtual environment before running or developing the project!**
+> You should see `(venv)` at the start of your terminal prompt when it is active.
+
+---
+
+If you want to deactivate the environment later, just run:
+```powershell
+deactivate
+```
+
+---
+
+4. **Database setup**
 
 3. **Database setup**
 ```bash
