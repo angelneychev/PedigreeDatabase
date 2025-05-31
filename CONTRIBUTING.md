@@ -1,3 +1,45 @@
+## 🏗️ Development Environment (venv)
+
+Always use a Python virtual environment for development and testing. This ensures all dependencies are isolated and the project works the same on every machine.
+
+**Create and activate venv (Windows PowerShell):**
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+**Create and activate venv (Linux/macOS):**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
+
+> Always activate the virtual environment before running, testing, or developing the project! You should see `(venv)` at the start of your terminal prompt.
+
+---
+
+## 🖥️ UI/UX Standards
+
+- All new UI work must follow the current standard: **full-width layout**, dog info card integrated in the pedigree header, and generation selector in the header (numbers only, no text).
+- AJAX-based pedigree updates (no page reloads, no URL parameters for generation)
+- Mobile-first: test on mobile browsers, ensure touch targets and offline handling
+- See `README.md` for screenshots and technical details
+
+## 📱 Mobile/Storage Testing
+
+- Test localStorage, sessionStorage, and cookie fallback for generation selection
+- Use `/test_mobile_storage.html` and `/mobile_test.html` for device/browser validation
+- All new features must be tested for mobile compatibility and offline/online switching
+
+## 🧪 Mobile/UX Implementation & Testing
+
+- See `README.md` for a summary of the mobile localStorage implementation, test results, and production readiness.
+- All contributors must review the latest implementation notes before working on pedigree or UI features.
 # Contributing to Dalmatian Pedigree Database
 
 Thank you for your interest in contributing to the Dalmatian Pedigree Database project! This document provides guidelines for contributing to the project.

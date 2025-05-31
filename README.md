@@ -1,4 +1,3 @@
-
 # Dalmatian Pedigree Database
 
 A web-based system for managing pedigree data for Dalmatian dogs, built with FastAPI and MariaDB.
@@ -298,3 +297,37 @@ This project is licensed under the MIT License.
 2. **Копирайте шаблона**: от `template_for_future_countries/`
 3. **Адаптирайте скрипта**: към формата на вашите данни
 4. **Стартирайте импорта**: `python [country_name]_import.py`
+
+## 📱 Mobile/UX Implementation & Testing
+
+### Overview
+The pedigree page uses localStorage (with sessionStorage and cookie fallback) to remember the user's generation selection, with a full-width, mobile-optimized layout. All AJAX, error handling, and offline/online detection are production-ready and tested.
+
+### Key Features
+- Clean URLs (no query parameters for generation)
+- User preference persistence (localStorage/sessionStorage/cookie)
+- Mobile-first design: touch targets, font sizing, offline/online detection
+- AJAX pedigree updates (no page reload)
+- Loading spinners, error messages, connectivity warnings
+- Full-width layout, dog info card in pedigree header, generation selector in header
+
+### Testing & Validation
+- `/test_mobile_storage.html` – Full mobile/browser test suite
+- `/mobile_test.html` – Device capability and storage fallback test
+- All major browsers and mobile devices tested
+- Server logs confirm correct API usage and preference saving
+
+### Production Readiness
+- All features validated and tested (see `TEST_RESULTS_FINAL.md` for details)
+- Implementation summary and validation in `IMPLEMENTATION_COMPLETE.md`
+- Security: No sensitive data in storage, server-side validation
+- Performance: Fast AJAX, minimal payload, efficient caching
+
+---
+
+**For contributors:**
+- Review the mobile/UX implementation summary before working on pedigree or UI features
+- Test all changes for mobile compatibility and offline/online switching
+- Follow the UI/UX standards in `CONTRIBUTING.md`
+
+---
