@@ -57,80 +57,86 @@ The core feature of this system is a **fully dynamic, left-to-right genealogical
 - **Data and schema migrations**
 - **Health test type management**
 
-## 🚀 Quick Start
+## 🚀 How to Start the Project
 
 ### Prerequisites
 - Python 3.8+
 - MariaDB/MySQL server
 - pip (Python package manager)
 
-### Installation Steps
+### Complete Startup Instructions
 
-1. **Clone the project**
+Follow these steps to get the Dalmatian Pedigree Database running on your system:
+
+#### 1. **Clone the Project**
 ```bash
 git clone <repository-url>
 cd PedigreeDatabase
 ```
 
+#### 2. **Create and Activate Virtual Environment**
 
-2. **(Recommended) Create and activate a virtual environment**
-
-On Windows PowerShell:
+**Windows PowerShell:**
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 ```
 
-On Linux/macOS:
+**Linux/macOS:**
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-3. **Install dependencies**
+> **Important**: Always activate the virtual environment before running or developing the project! You should see `(venv)` at the start of your terminal prompt when it is active.
+
+#### 3. **Install Dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-> **Always activate the virtual environment before running or developing the project!**
-> You should see `(venv)` at the start of your terminal prompt when it is active.
-
----
-
-If you want to deactivate the environment later, just run:
-```powershell
-deactivate
-```
-
----
-
-4. **Database setup**
-
-3. **Database setup**
+#### 4. **Database Setup**
+Create the database in MariaDB/MySQL:
 ```bash
-# Create database in MariaDB
 mysql -u root -p
+```
+Then in MySQL console:
+```sql
 CREATE DATABASE pedigree_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
 ```
 
-4. **Configure database connection**
-Edit `database.py`:
+#### 5. **Configure Database Connection**
+Edit the `database.py` file and update the DATABASE_URL:
 ```python
 DATABASE_URL = "mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/pedigree_db"
 ```
+Replace `YOUR_PASSWORD` with your MariaDB/MySQL root password.
 
-5. **Create tables**
+#### 6. **Create Database Tables**
 ```bash
 python create_database.py
 ```
 
-### Start the Application
-
+#### 7. **Start the Application**
 ```bash
 python -m uvicorn main:app --host 127.0.0.1 --port 8007 --reload
 ```
 
-The application will be available at: `http://127.0.0.1:8007`
+#### 8. **Access the Application**
+Open your web browser and go to: `http://127.0.0.1:8007`
+
+---
+
+**To deactivate the virtual environment later:**
+```bash
+deactivate
+```
+
+**To restart the application (after initial setup):**
+1. Navigate to project directory
+2. Activate virtual environment (step 2 above)
+3. Start the application (step 7 above)
 
 ## 🧬 Dynamic Pedigree Matrix - Technical Implementation
 

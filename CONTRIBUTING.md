@@ -1,3 +1,85 @@
+## 🚀 How to Start the Project
+
+### Prerequisites
+- Python 3.8+
+- MariaDB/MySQL server
+- Git
+- pip (Python package manager)
+
+### Complete Development Setup
+
+Follow these detailed steps to set up the Dalmatian Pedigree Database for development:
+
+#### 1. **Fork and Clone the Repository**
+```bash
+git clone https://github.com/yourusername/dalmatian-pedigree-database.git
+cd dalmatian-pedigree-database
+```
+
+#### 2. **Create and Activate Virtual Environment**
+
+**Windows PowerShell:**
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+**Linux/macOS:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+> **Critical**: Always activate the virtual environment before running, testing, or developing the project! You should see `(venv)` at the start of your terminal prompt.
+
+#### 3. **Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. **Database Setup**
+Create the database in MariaDB/MySQL:
+```bash
+mysql -u root -p
+```
+Then in MySQL console:
+```sql
+CREATE DATABASE pedigree_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
+```
+
+#### 5. **Configure Database Connection**
+Edit the `database.py` file and update the DATABASE_URL:
+```python
+DATABASE_URL = "mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/pedigree_db"
+```
+Replace `YOUR_PASSWORD` with your MariaDB/MySQL root password.
+
+#### 6. **Create Database Tables**
+```bash
+python create_database.py
+```
+
+#### 7. **Start the Development Server**
+```bash
+python -m uvicorn main:app --host 127.0.0.1 --port 8007 --reload
+```
+
+#### 8. **Access the Application**
+Open your web browser and go to: `http://127.0.0.1:8007`
+
+---
+
+**For daily development:**
+1. Navigate to project directory
+2. Activate virtual environment (step 2 above)
+3. Start the development server (step 7 above)
+
+**To deactivate the virtual environment:**
+```bash
+deactivate
+```
+
 ## 🏗️ Development Environment (venv)
 
 Always use a Python virtual environment for development and testing. This ensures all dependencies are isolated and the project works the same on every machine.
@@ -44,25 +126,20 @@ pip install -r requirements.txt
 
 Thank you for your interest in contributing to the Dalmatian Pedigree Database project! This document provides guidelines for contributing to the project.
 
-## 🚀 Getting Started
+## 🛠️ Getting Started for Contributors
 
-### Prerequisites
-- Python 3.8+
-- MariaDB/MySQL server
-- Git
+### Quick Start
+For detailed setup instructions, see the **"🚀 How to Start the Project"** section above.
 
-### Setting up the development environment
-1. Fork the repository
-2. Clone your fork:
+### Development Workflow
+1. Follow the complete setup instructions above
+2. Create a new branch for your feature:
    ```bash
-   git clone https://github.com/yourusername/dalmatian-pedigree-database.git
-   cd dalmatian-pedigree-database
+   git checkout -b feature/your-feature-name
    ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Set up the database and run the application (see README.md)
+3. Make your changes and test thoroughly
+4. Commit with clear messages
+5. Push to your fork and create a Pull Request
 
 ## 🛠️ Development Guidelines
 
