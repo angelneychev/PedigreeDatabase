@@ -822,25 +822,74 @@ td.inbred.inbred-6 {
     }
 }
 
-/* Full-width layout styles for pedigree pages */
+/* Full-width layout with side padding for pedigree pages */
 .main-content {
     width: 100vw;
     margin: 0;
-    padding: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 0;
+    padding-bottom: 0;
     overflow-x: auto;
 }
 
-/* Ensure container-fluid truly uses full width */
 .container-fluid {
-    padding: 0;
+    padding-left: 24px;
+    padding-right: 24px;
     margin: 0;
     max-width: none;
     width: 100%;
 }
 
-/* Remove any default body margins that could interfere */
-body {
-    margin: 0;
-    padding: 0;
-    overflow-x: auto;
+@media (max-width: 768px) {
+  .main-content,
+  .container-fluid {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.pedigree-table,
+.pedigree-horizontal {
+    /* Reduce row height for better fit on screen */
+    font-size: 0.85rem;
+}
+
+.pedigree-table td,
+.pedigree-horizontal td {
+    min-height: 32px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    line-height: 1.1 !important;
+}
+
+.pedigree-dog, .pedigree-box {
+    min-height: 32px !important;
+    padding: 4px 6px !important;
+    font-size: 0.92em !important;
+}
+
+/* Make the table more compact on desktop */
+@media (min-width: 992px) {
+  .pedigree-table td, .pedigree-horizontal td {
+    min-width: 110px !important;
+    font-size: 0.85rem !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+}
+
+/* Even more compact on mobile */
+@media (max-width: 768px) {
+  .pedigree-table td, .pedigree-horizontal td {
+    min-width: 80px !important;
+    font-size: 0.78rem !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+  .pedigree-dog, .pedigree-box {
+    font-size: 0.85em !important;
+    min-height: 24px !important;
+    padding: 2px 2px !important;
+  }
 }

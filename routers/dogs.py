@@ -27,17 +27,22 @@ async def read_dogs_homepage(request: Request, db: Session = Depends(get_db)):
 
 @router.get("/search", response_class=HTMLResponse)
 async def search_dogs_page(request: Request, q: str = "", page: int = 1, db: Session = Depends(get_db)):
+    from fastapi.responses import RedirectResponse
     dogs = []
     total_results = 0
     total_pages = 0
     limit = 20
-    
+
     if q and len(q.strip()) >= 2:
         skip = (page - 1) * limit
         dogs = crud.search_dogs(db, query=q.strip(), skip=skip, limit=limit)
         total_results = crud.count_search_dogs(db, query=q.strip())
         total_pages = (total_results + limit - 1) // limit  # Ceiling division
-    
+
+        # If only one result, redirect to dog detail page
+        if total_results == 1 and dogs:
+            return RedirectResponse(url=f"/dogs/{dogs[0].id}")
+
     return templates.TemplateResponse("search_results.html", {
         "request": request, 
         "dogs": dogs, 
