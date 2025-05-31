@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Dalmatian Pedigree Search{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="search-container p-5">
+            <div class="text-center mb-5">
+                <h1 class="display-4 mb-3">🐕 Dalmatian Pedigree Database</h1>
+                <p class="lead text-muted">Търсене в базата данни с {{ stats.total_dogs if stats }} далматинци</p>
+            </div>
+            
+            <form method="get" action="/search" class="mb-4">
+                <div class="mb-3">
+                    <label for="search" class="form-label h5 text-dark">Търсене на куче</label>
+                    <div class="input-group input-group-lg">
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg" 
+                            id="search"
+                            name="q" 
+                            placeholder="Име, регистрационен номер, татуировка, микрочип, кенел, порода..."
+                            autofocus
+                            style="border-radius: 0.75rem 0 0 0.75rem; font-size: 1.1rem; padding: 0.75rem 1rem;"
+                        >
+                        <button class="btn btn-primary btn-lg px-4" type="submit" style="border-radius: 0 0.75rem 0.75rem 0;">
+                            <i class="bi bi-search"></i> Търси
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="text-center text-muted mb-4">
+                <small>
+                    <i class="bi bi-info-circle"></i> 
+                    Търсете по <strong>име</strong>, <strong>регистрационен номер</strong>, <strong>татуировка</strong>, <strong>микрочип</strong>, <strong>кенел</strong> или <strong>порода</strong>
+                </small>
+            </div>
+            
+            {% if stats %}
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="card border-0" style="background: rgba(0, 123, 255, 0.1);">
+                        <div class="card-body py-3">
+                            <h4 class="text-primary mb-1">{{ stats.total_dogs }}</h4>
+                            <small class="text-muted">Общо кучета</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0" style="background: rgba(40, 167, 69, 0.1);">
+                        <div class="card-body py-3">
+                            <h4 class="text-success mb-1">{{ stats.males }}</h4>
+                            <small class="text-muted">Мъжки</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0" style="background: rgba(220, 53, 69, 0.1);">
+                        <div class="card-body py-3">
+                            <h4 class="text-danger mb-1">{{ stats.females }}</h4>
+                            <small class="text-muted">Женски</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

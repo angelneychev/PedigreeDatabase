@@ -1,0 +1,45 @@
+{
+  "import_type": "health_test",
+  "description": "Import health test results from CSV file",
+  "source_file": "data_import/raw_data/health_tests.csv",
+  "file_type": "csv",
+  "mapping": {
+    "dog_identifier": "Dog_Registration",
+    "test_type": {
+      "source_field": "Test_Name",
+      "transform": {
+        "type": "lookup",
+        "table": {
+          "HD": "Hip Dysplasia",
+          "ED": "Elbow Dysplasia",
+          "HUU": "Hyperuricosuria",
+          "DM": "Degenerative Myelopathy",
+          "PRA": "Progressive Retinal Atrophy",
+          "CEA": "Collie Eye Anomaly"
+        }
+      }
+    },
+    "result": {
+      "source_field": "Result",
+      "transform": {
+        "type": "uppercase"
+      }
+    },
+    "test_date": {
+      "source_field": "Test_Date",
+      "transform": {
+        "type": "date",
+        "format": "%Y-%m-%d"
+      }
+    },
+    "certificate_number": "Certificate_Number",
+    "laboratory": "Laboratory",
+    "veterinarian": "Veterinarian",
+    "notes": "Notes"
+  },
+  "options": {
+    "skip_duplicates": true,
+    "update_existing": false,
+    "create_test_types": true
+  }
+}

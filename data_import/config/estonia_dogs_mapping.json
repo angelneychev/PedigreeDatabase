@@ -1,0 +1,64 @@
+{
+  "source_info": {
+    "file": "dalmatian_dogs_estoniа_27052025.json",
+    "country": "Estonia",
+    "total_records": 2242,
+    "date_imported": "2025-05-28T13:04:00.884293"
+  },
+  "field_mapping": {
+    "name": "name",
+    "regCode": "registration_number",    "sex": "sex",
+    "dateOfBirth": {
+      "field": "date_of_birth",
+      "transform": "parse_estonian_date"
+    },
+    "color": "color",
+    "breed": "breed",
+    "kennelName": "kennel_name",
+    "tatooNo": "tatoo_no",
+    "microchip": "microchip",
+    "breeder": "breeder"
+  },
+  "parent_mapping": {
+    "father": {
+      "name_field": "fatherName",
+      "registration_field": "fatherRegNumber",
+      "dogId_field": "fatherDogId",
+      "target_field": "sire_id"
+    },
+    "mother": {
+      "name_field": "motherName",
+      "registration_field": "motherRegNumber",
+      "dogId_field": "motherDogId",
+      "target_field": "dam_id"
+    }
+  },        "transformations": {
+            "normalize_sex": {
+                "Male": "Male",
+                "Female": "Female"
+            },
+    "parse_estonian_date": {
+      "format": "%d.%m.%Y",
+      "null_values": [
+        "-",
+        "",
+        null
+      ]
+    },
+    "clean_empty_values": {
+      "null_values": [
+        "-",
+        "",
+        null
+      ],
+      "trim_whitespace": true
+    }
+  },
+  "import_options": {
+    "skip_duplicates": true,
+    "update_existing": false,
+    "batch_size": 200,
+    "create_missing_parents": false,
+    "validate_before_import": true
+  }
+}

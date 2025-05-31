@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Health Tests - {{ dog.name }} - PedigreeDatabase{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="bi bi-heart-pulse"></i> Health Tests for 
+                <a href="/dogs/{{ dog.id }}" class="text-decoration-none">{{ dog.name }}</a>
+            </h2>
+            <a href="/dogs/{{ dog.id }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Back to Dog
+            </a>
+        </div>
+
+        {% if success %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle"></i> {{ success }}
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if health_tests %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="bi bi-list-check"></i> Existing Health Tests</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Test Type</th>
+                                <th>Date</th>
+                                <th>Result</th>
+                                <th>Place</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for test in health_tests %}
+                            <tr>
+                                <td>{{ test.test_type.name if test.test_type else 'Unknown' }}</td>
+                                <td>{{ test.test_date.strftime('%Y-%m-%d') if test.test_date else 'N/A' }}</td>
+                                <td>
+                                    <span class="badge bg-{% if test.result in ['+/+', 'A'] %}success{% elif test.result in ['-/-', 'D', 'E'] %}danger{% else %}warning{% endif %}">
+                                        {{ test.result }}
+                                    </span>
+                                </td>
+                                <td>{{ test.place or 'N/A' }}</td>
+                                <td>{{ test.notes or 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Add New Health Test
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/dogs/{{ dog.id }}/health-tests">
+                    <div class="mb-3">
+                        <label for="test_type_id" class="form-label">Test Type *</label>
+                        <select class="form-select" id="test_type_id" name="test_type_id" required>
+                            <option value="">Select test type</option>
+                            {% for test_type in test_types %}
+                            <option value="{{ test_type.id }}">{{ test_type.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="test_date" class="form-label">Test Date *</label>
+                        <input type="date" class="form-control" id="test_date" name="test_date" required>
+                    </div>                    <div class="mb-3">
+                        <label for="result" class="form-label">Result *</label>
+                        <input type="text" class="form-control" id="result" name="result" required>
+                        <div class="form-text" id="resultHelp">Valid results depend on the test type selected.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="place" class="form-label">Place</label>
+                        <input type="text" class="form-control" id="place" name="place" placeholder="Where was the test performed?">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Additional notes about the test"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Add Test
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Test Types Reference -->
+        {% if test_types %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Test Types Reference</h6>
+            </div>
+            <div class="card-body">
+                {% for test_type in test_types %}
+                <div class="mb-2">
+                    <strong>{{ test_type.name }}</strong>
+                    <br><small class="text-muted">
+                        Valid results: {{ test_type.valid_results }}
+                    </small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if not health_tests %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="text-center">
+            <i class="bi bi-heart-pulse display-1 text-muted"></i>
+            <h4 class="mt-3">No Health Tests Yet</h4>
+            <p class="text-muted">Add the first health test for {{ dog.name }} using the form on the right.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Pass test types data to JavaScript
+window.testTypesData = {
+    {% for test_type in test_types %}
+    "{{ test_type.id }}": "{{ test_type.valid_results|safe }}",
+    {% endfor %}
+};
+
+document.getElementById('test_type_id').addEventListener('change', function() {
+    updateValidResults(this.value);
+});
+</script>
+{% endblock %}

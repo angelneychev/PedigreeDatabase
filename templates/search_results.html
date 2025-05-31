@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - PedigreeDatabase{% endblock %}
+
+{% block content %}
+<div class="search-section py-2">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <form method="get" action="/search" class="d-flex">
+                <input 
+                    type="text" 
+                    class="form-control me-2" 
+                    name="q" 
+                    value="{{ query }}" 
+                    placeholder="Search by name, registration number, tattoo, microchip, kennel, or breed..."
+                    autofocus
+                >
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if query %}
+<div class="py-2 bg-light border-bottom">
+    <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Search results for "{{ query }}"</h5>
+        {% if total_results > 0 %}
+        <small class="text-muted">Showing {{ ((current_page - 1) * 20 + 1) }} - {{ ((current_page - 1) * 20 + dogs|length) }} of {{ total_results }} results</small>
+        {% endif %}
+    </div>
+</div>
+
+{% if dogs %}
+<!-- Results Table -->
+<div class="table-responsive">
+    <table class="table table-striped table-hover mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th class="d-none d-md-table-cell">Date of Birth</th>
+                <th class="d-none d-lg-table-cell">Breed</th>
+                <th class="d-none d-lg-table-cell">Sex</th>
+                <th class="d-none d-xl-table-cell">Registration #</th>
+                <th class="d-none d-xl-table-cell">Sire</th>
+                <th class="d-none d-xl-table-cell">Dam</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dog in dogs %}
+            <tr>
+                <td>
+                    <a href="/dogs/{{ dog.id }}" class="text-decoration-none fw-bold text-primary">
+                        {{ dog.name }}
+                    </a>
+                    <div class="d-md-none mt-1">
+                        <small class="text-muted">
+                            {% if dog.date_of_birth %}{{ dog.date_of_birth.strftime('%Y-%m-%d') }}{% endif %}
+                            {% if dog.sex %} | {{ dog.sex }}{% endif %}
+                            {% if dog.breed %} | {{ dog.breed }}{% endif %}
+                        </small>
+                    </div>
+                </td>
+                <td class="d-none d-md-table-cell">
+                    {% if dog.date_of_birth %}
+                    {{ dog.date_of_birth.strftime('%Y-%m-%d') }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td class="d-none d-lg-table-cell">{{ dog.breed or 'Dalmatian' }}</td>
+                <td class="d-none d-lg-table-cell">{{ dog.sex or '-' }}</td>
+                <td class="d-none d-xl-table-cell">{{ dog.registration_number or '-' }}</td>
+                <td class="d-none d-xl-table-cell">
+                    {% if dog.sire %}
+                    <a href="/dogs/{{ dog.sire.id }}" class="text-decoration-none">
+                        {{ dog.sire.name }}
+                    </a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td class="d-none d-xl-table-cell">
+                    {% if dog.dam %}
+                    <a href="/dogs/{{ dog.dam.id }}" class="text-decoration-none">
+                        {{ dog.dam.name }}
+                    </a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="py-3 border-top bg-light">
+    <nav aria-label="Search results pagination">
+        <ul class="pagination justify-content-center mb-0">
+            {% if has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="/search?q={{ query }}&page={{ prev_page }}">
+                    <i class="bi bi-chevron-left"></i> Previous
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for page_num in range(1, total_pages + 1) %}
+                {% if page_num == current_page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% elif page_num <= 3 or page_num > total_pages - 3 or (page_num >= current_page - 2 and page_num <= current_page + 2) %}
+                <li class="page-item">
+                    <a class="page-link" href="/search?q={{ query }}&page={{ page_num }}">{{ page_num }}</a>
+                </li>
+                {% elif page_num == 4 and current_page > 6 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% elif page_num == total_pages - 3 and current_page < total_pages - 5 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if has_next %}
+            <li class="page-item">
+                <a class="page-link" href="/search?q={{ query }}&page={{ next_page }}">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-search display-1 text-muted"></i>
+    <h4 class="mt-3">No Results Found</h4>
+    <p class="text-muted">No dogs found matching "{{ query }}". Try a different search term.</p>
+    <a href="/dogs" class="btn btn-outline-primary">
+        <i class="bi bi-collection"></i> Browse All Dogs
+    </a>
+</div>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-search display-1 text-muted"></i>
+    <h4 class="mt-3">Search for Dogs</h4>
+    <p class="text-muted">Enter a search term above to find dogs by name, registration number, tattoo, microchip, kennel, or breed.</p>
+</div>
+{% endif %}
+{% endblock %}

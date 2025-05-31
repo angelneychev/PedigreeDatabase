@@ -1,0 +1,823 @@
+/* Box pedigree visualization styles */
+.pedigree-box-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.pedigree-box {
+  border: 1px solid #3a3a3a;
+  background: #fff;
+  min-width: 220px;
+  min-height: 60px;
+  margin: 0.5rem auto;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 2px 6px #0001;
+  font-size: 1em;
+}
+.pedigree-box-empty {
+  background: #f8f9fa;
+  border-style: dashed;
+  color: #bbb;
+}
+.pedigree-parents {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.2rem;
+  gap: 1.2rem;
+}
+.pedigree-box .pedigree-parents .pedigree-box {
+  min-width: 180px;
+  font-size: 0.95em;
+}
+.pedigree-box .pedigree-parents .pedigree-parents .pedigree-box {
+  min-width: 140px;
+  font-size: 0.9em;
+}
+.pedigree-box .pedigree-parents .pedigree-parents .pedigree-parents .pedigree-box {
+  min-width: 110px;
+  font-size: 0.85em;
+}
+.pedigree-dog-info.normal {
+  font-weight: bold;
+  color: #1a3a6b;
+}
+.pedigree-dog-info.small {
+  font-size: 0.9em;
+}
+.pedigree-dog-info.unknown {
+  color: #aaa;
+}
+/* Custom CSS for PedigreeDatabase */
+.navbar-brand {
+    font-weight: bold;
+}
+
+.pedigree-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+}
+
+.dog-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+}
+
+.dog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.health-test-badge {
+    font-size: 0.85em;
+    padding: 0.4em 0.6em;
+}
+
+.pedigree-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pedigree-level {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 10px 0;
+}
+
+.pedigree-box {
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 150px;
+    border: 2px solid #ddd;
+}
+
+.pedigree-box.current {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-color: #28a745;
+}
+
+.pedigree-box.parent {
+    background: linear-gradient(135deg, #007bff 0%, #6f42c1 100%);
+    color: white;
+    border-color: #007bff;
+}
+
+.pedigree-box.grandparent {
+    background: #f8f9fa;
+    border-color: #6c757d;
+}
+
+.search-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    border-radius: 10px;
+}
+
+.btn-custom {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 500;
+}
+
+.health-status-good {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.health-status-warning {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.health-status-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal-custom {
+    border-radius: 15px;
+}
+
+.footer-custom {
+    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+    color: white;
+}
+
+/* Elegant Pedigree Table Styles */
+.pedigree-table {
+    font-size: 0.9rem;
+    border-collapse: separate;
+    border-spacing: 2px;
+    width: 100%;
+    margin: 0;
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pedigree-table td {
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    vertical-align: middle;
+    background: #fff;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.pedigree-table td:hover:not(.inbred) {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+.pedigree-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: 1px solid #5a67d8;
+    padding: 12px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    border-radius: 4px;
+}
+
+.pedigree-dog {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 2px;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    color: #2d3748 !important;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.pedigree-dog:hover:not(.inbred) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-color: #cbd5e0;
+}
+
+.pedigree-dog.unknown {
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%) !important;
+    border: 2px solid #e2e8f0;
+    color: #718096;
+    font-style: italic;
+}
+
+.pedigree-dog.small {
+    font-size: 0.85rem;
+    min-height: 50px;
+    padding: 6px;
+}
+
+.pedigree-dog .dog-name {
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 3px;
+    line-height: 1.3;
+    line-height: 1.2;
+}
+
+.pedigree-dog .dog-reg {
+    font-size: 0.75em;
+    opacity: 0.9;
+    margin-bottom: 1px;
+}
+
+.pedigree-dog .dog-birth {
+    font-size: 0.7em;
+    opacity: 0.8;
+}
+
+.pedigree-dog a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.pedigree-dog a:hover {
+    text-decoration: underline !important;
+}
+
+.sire-cell {
+    background: none;
+    border-left: none;
+}
+
+.dam-cell {
+    background: none;
+    border-left: none;
+}
+
+/* Finnish Kennel Club style adjustments */
+.pedigree-table td:first-child {
+    border-left: 3px solid #2196f3;
+}
+
+.pedigree-table td:last-child {
+    border-right: 3px solid #4caf50;
+}
+
+/* Matrix structure support for proper pedigree layout */
+.pedigree-table td[rowspan] {
+    vertical-align: middle;
+}
+
+.pedigree-table td[rowspan="8"] {
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+    border-left: 4px solid #2196f3;
+}
+
+.pedigree-table td[rowspan="4"] {
+    background: linear-gradient(135deg, #f8f8ff 0%, #f0f0ff 100%);
+    border-left: 3px solid #5c6bc0;
+}
+
+.pedigree-table td[rowspan="2"] {
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    border-left: 2px solid #9e9e9e;
+}
+
+/* Update the dam row highlight for the new structure */
+.pedigree-table tbody tr:nth-child(9) td:first-child {
+    border-left: 3px solid #e91e63;
+}
+
+/* Siblings section */
+.siblings-table {
+    font-size: 0.9rem;
+}
+
+.siblings-table .health-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    margin: 1px;
+}
+
+.siblings-table .sex-icon {
+    font-size: 1.1em;
+    margin-right: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .pedigree-table {
+        font-size: 0.8rem;
+    }
+    
+    .pedigree-dog {
+        min-height: 50px;
+        padding: 6px;
+    }
+    
+    .pedigree-dog .dog-name {
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 768px) {
+    .pedigree-table {
+        font-size: 0.7rem;
+    }
+    
+    .pedigree-dog {
+        min-height: 40px;
+        padding: 4px;
+    }
+    
+    .pedigree-dog .dog-reg,
+    .pedigree-dog .dog-birth {
+        display: none;
+    }
+}
+
+/* Inbreeding Detection Styles - Elegant Professional Design */
+.pedigree-dog.inbred {
+    font-weight: 600 !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
+}
+
+.pedigree-dog.inbred:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+/* Elegant color schemes for different common ancestors */
+.pedigree-dog.inbred-1 {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%) !important;
+    border: 2px solid #e53e3e !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.2) !important;
+}
+
+.pedigree-dog.inbred-2 {
+    background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%) !important;
+    border: 2px solid #3182ce !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.2) !important;
+}
+
+.pedigree-dog.inbred-3 {
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%) !important;
+    border: 2px solid #38a169 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.2) !important;
+}
+
+.pedigree-dog.inbred-4 {
+    background: linear-gradient(135deg, #fffaf0 0%, #fbd38d 100%) !important;
+    border: 2px solid #dd6b20 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(221, 107, 32, 0.2) !important;
+}
+
+.pedigree-dog.inbred-5 {
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%) !important;
+    border: 2px solid #805ad5 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(128, 90, 213, 0.2) !important;
+}
+
+.pedigree-dog.inbred-6 {
+    background: linear-gradient(135deg, #fffff0 0%, #faf089 100%) !important;
+    border: 2px solid #d69e2e !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(214, 158, 46, 0.2) !important;
+}
+
+/* Elegant cell styling for inbred ancestors */
+td.inbred {
+    position: relative !important;
+    transition: all 0.3s ease !important;
+}
+
+td.inbred::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    border-radius: 6px;
+    z-index: -1;
+}
+
+/* Inbreeding indicator styling */
+.inbreeding-indicator {
+    display: inline-block;
+    font-size: 0.9em;
+    margin-right: 4px;
+    opacity: 0.8;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+    transition: all 0.3s ease;
+}
+
+.inbreeding-indicator:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+td.inbred.inbred-1 { 
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%) !important; 
+    border: 2px solid #e53e3e !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.15) !important;
+}
+
+td.inbred.inbred-2 { 
+    background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%) !important; 
+    border: 2px solid #3182ce !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.15) !important;
+}
+
+td.inbred.inbred-3 { 
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%) !important; 
+    border: 2px solid #38a169 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.15) !important;
+}
+
+td.inbred.inbred-4 { 
+    background: linear-gradient(135deg, #fffaf0 0%, #fbd38d 100%) !important; 
+    border: 2px solid #dd6b20 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(221, 107, 32, 0.15) !important;
+}
+
+td.inbred.inbred-5 { 
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%) !important; 
+    border: 2px solid #805ad5 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(128, 90, 213, 0.15) !important;
+}
+
+td.inbred.inbred-6 { 
+    background: linear-gradient(135deg, #fffff0 0%, #faf089 100%) !important; 
+    border: 2px solid #d69e2e !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(214, 158, 46, 0.15) !important;
+}
+
+/* Elegant Inbreeding Legend Styles */
+.inbreeding-legend {
+    margin-top: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.inbreeding-legend h4 {
+    color: #2d3748;
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inbreeding-legend h4::before {
+    content: '🔗';
+    font-size: 1.1em;
+}
+
+.inbreeding-legend .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.inbreeding-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.inbreeding-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.inbreeding-item .color-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    margin-right: 12px;
+    border: 2px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.inbreeding-item.inbred-1 {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+    border-color: #e53e3e;
+}
+
+.inbreeding-item.inbred-1 .color-indicator {
+    background: linear-gradient(135deg, #fed7d7 0%, #e53e3e 100%);
+}
+
+.inbreeding-item.inbred-2 {
+    background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+    border-color: #3182ce;
+}
+
+.inbreeding-item.inbred-2 .color-indicator {
+    background: linear-gradient(135deg, #bee3f8 0%, #3182ce 100%);
+}
+
+.inbreeding-item.inbred-3 {
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+    border-color: #38a169;
+}
+
+.inbreeding-item.inbred-3 .color-indicator {
+    background: linear-gradient(135deg, #c6f6d5 0%, #38a169 100%);
+}
+
+.inbreeding-item.inbred-4 {
+    background: linear-gradient(135deg, #fffaf0 0%, #fbd38d 100%);
+    border-color: #dd6b20;
+}
+
+.inbreeding-item.inbred-4 .color-indicator {
+    background: linear-gradient(135deg, #fbd38d 0%, #dd6b20 100%);
+}
+
+.inbreeding-item.inbred-5 {
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%);
+    border-color: #805ad5;
+}
+
+.inbreeding-item.inbred-5 .color-indicator {
+    background: linear-gradient(135deg, #e9d8fd 0%, #805ad5 100%);
+}
+
+.inbreeding-item.inbred-6 {
+    background: linear-gradient(135deg, #fffff0 0%, #faf089 100%);
+    border-color: #d69e2e;
+}
+
+.inbreeding-item.inbred-6 .color-indicator {
+    background: linear-gradient(135deg, #faf089 0%, #d69e2e 100%);
+}
+
+/* Elegant animations for inbreeding highlighting */
+@keyframes glow {
+    0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    50% { box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+}
+
+@keyframes subtle-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.pedigree-dog.inbred:hover {
+    animation: glow 2s ease-in-out infinite;
+}
+
+.inbreeding-indicator {
+    animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+/* Enhanced table aesthetics */
+.pedigree-table thead th {
+    position: relative;
+    overflow: hidden;
+}
+
+.pedigree-table thead th::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.pedigree-table thead th:hover::before {
+    left: 100%;
+}
+
+/* Generations Filter Styling */
+.generations-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.generations-filter label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.generations-filter select {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #495057;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.generations-filter select:focus {
+    background-color: white;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: 0;
+}
+
+.generations-filter select:hover {
+    background-color: white;
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Matrix Pedigree Table Styles */
+.pedigree-horizontal {
+    font-size: 0.85rem;
+}
+
+.pedigree-horizontal thead th {
+    background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    padding: 12px 8px;
+}
+
+.pedigree-horizontal thead th.gen-1-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.pedigree-horizontal thead th.gen-2-header {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.pedigree-horizontal thead th.gen-3-header {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: #212529;
+}
+
+.pedigree-horizontal thead th.gen-4-header {
+    background: linear-gradient(135deg, #fd7e14 0%, #dc6502 100%);
+}
+
+.pedigree-horizontal thead th.gen-5-header {
+    background: linear-gradient(135deg, #6f42c1 0%, #59359a 100%);
+}
+
+.pedigree-horizontal thead th.gen-6-header {
+    background: linear-gradient(135deg, #e83e8c 0%, #d81b60 100%);
+}
+
+.pedigree-horizontal thead th.gen-7-header {
+    background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+}
+
+.pedigree-horizontal thead th.gen-8-header {
+    background: linear-gradient(135deg, #6610f2 0%, #520dc2 100%);
+}
+
+.pedigree-horizontal thead th.gen-9-header {
+    background: linear-gradient(135deg, #fd7e14 0%, #e55100 100%);
+}
+
+.pedigree-horizontal td {
+    border: 1px solid #e0e0e0;
+    padding: 8px;
+    vertical-align: top;
+    min-height: 60px;
+}
+
+.pedigree-horizontal td.gen-1 {
+    background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+    border-left: 4px solid #007bff;
+    font-weight: 600;
+}
+
+.pedigree-horizontal td.gen-2 {
+    background: linear-gradient(135deg, #f8fff9 0%, #e6ffe6 100%);
+    border-left: 3px solid #28a745;
+}
+
+.pedigree-horizontal td.gen-3 {
+    background: linear-gradient(135deg, #fffef8 0%, #fff9e6 100%);
+    border-left: 3px solid #ffc107;
+}
+
+.pedigree-horizontal td.gen-4 {
+    background: linear-gradient(135deg, #fff9f6 0%, #ffede6 100%);
+    border-left: 3px solid #fd7e14;
+}
+
+.pedigree-horizontal td.gen-5 {
+    background: linear-gradient(135deg, #faf8ff 0%, #f0e6ff 100%);
+    border-left: 3px solid #6f42c1;
+}
+
+.pedigree-horizontal td.gen-6 {
+    background: linear-gradient(135deg, #fff8fc 0%, #ffe6f4 100%);
+    border-left: 3px solid #e83e8c;
+}
+
+.pedigree-horizontal td.gen-7 {
+    background: linear-gradient(135deg, #f8fffc 0%, #e6fff7 100%);
+    border-left: 3px solid #20c997;
+}
+
+.pedigree-horizontal td.gen-8 {
+    background: linear-gradient(135deg, #f9f8ff 0%, #ede6ff 100%);
+    border-left: 3px solid #6610f2;
+}
+
+.pedigree-horizontal td.gen-9 {
+    background: linear-gradient(135deg, #fff9f6 0%, #ffe6d9 100%);
+    border-left: 3px solid #fd7e14;
+}
+
+/* Empty cells styling */
+.pedigree-horizontal td:empty {
+    background: #f8f9fa !important;
+    border: 1px dashed #ced4da !important;
+}
+
+/* Responsive adjustments for matrix pedigree */
+@media (max-width: 1200px) {
+    .pedigree-horizontal {
+        font-size: 0.75rem;
+    }
+    
+    .pedigree-horizontal td {
+        padding: 6px;
+        min-height: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pedigree-horizontal {
+        font-size: 0.7rem;
+    }
+    
+    .pedigree-horizontal td {
+        padding: 4px;
+        min-height: 40px;
+    }
+    
+    .pedigree-horizontal thead th {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+    }
+}

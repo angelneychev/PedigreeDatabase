@@ -1,0 +1,39 @@
+{
+  "import_type": "dog",
+  "description": "Import dogs from Excel file with basic information",
+  "source_file": "data_import/raw_data/dogs_basic.xlsx",
+  "file_type": "excel",
+  "mapping": {
+    "name": "Name",
+    "registration_number": "Registration_Number",
+    "breed": {
+      "source_field": "Breed",
+      "default": "Dalmatian"
+    },
+    "color": "Color",
+    "sex": {
+      "source_field": "Sex",
+      "transform": {
+        "type": "uppercase"
+      }
+    },
+    "date_of_birth": {
+      "source_field": "Date_of_Birth",
+      "transform": {
+        "type": "date",
+        "format": "%d.%m.%Y"
+      }
+    },
+    "microchip": "Microchip",
+    "breeder": "Breeder",
+    "owner": "Owner",
+    "sire_registration": "Sire_Registration",
+    "dam_registration": "Dam_Registration",
+    "notes": "Notes"
+  },
+  "options": {
+    "skip_duplicates": true,
+    "update_existing": false,
+    "validate_parents": true
+  }
+}

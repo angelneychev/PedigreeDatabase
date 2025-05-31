@@ -1,0 +1,70 @@
+{
+  "import_type": "dog",
+  "description": "Import dogs from CSV with complex field mapping",
+  "source_file": "data_import/raw_data/dogs_complex.csv",
+  "file_type": "csv",
+  "mapping": {
+    "name": {
+      "source_field": "Full_Name",
+      "transform": {
+        "type": "strip"
+      }
+    },
+    "registration_number": "Reg_No",
+    "breed": {
+      "source_field": "Breed_Code",
+      "transform": {
+        "type": "lookup",
+        "table": {
+          "DAL": "Dalmatian",
+          "GSD": "German Shepherd",
+          "LAB": "Labrador Retriever"
+        }
+      }
+    },
+    "color": {
+      "source_field": "Color_Description",
+      "transform": {
+        "type": "split",
+        "delimiter": "/",
+        "index": 0
+      }
+    },
+    "sex": {
+      "source_field": "Gender",
+      "transform": {
+        "type": "lookup",
+        "table": {
+          "Male": "M",
+          "Female": "F",
+          "Dog": "M",
+          "Bitch": "F"
+        }
+      }
+    },
+    "date_of_birth": {
+      "source_field": "Birth_Date",
+      "transform": {
+        "type": "date",
+        "format": "%m/%d/%Y"
+      }
+    },
+    "microchip": "Chip_Number",
+    "breeder": {
+      "source_field": "Breeder_Info",
+      "transform": {
+        "type": "split",
+        "delimiter": ",",
+        "index": 0
+      }
+    },
+    "owner": "Current_Owner",
+    "sire_registration": "Father_Reg",
+    "dam_registration": "Mother_Reg"
+  },
+  "options": {
+    "skip_duplicates": false,
+    "update_existing": true,
+    "validate_parents": false
+  }
+}

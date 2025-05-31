@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% from "_macros.html" import render_pedigree_dog, render_dog_info, render_health_tests %}
+
+{# Helper macro to render ancestor from dictionary data #}
+{% macro render_ancestor_from_dict(ancestor_data) %}
+    {% if ancestor_data %}
+        <div class="pedigree-box">
+            <div class="pedigree-name">
+                {% if ancestor_data.name %}
+                    <a href="/dogs/{{ ancestor_data.id }}" class="dog-link">
+                        {{ ancestor_data.name }}
+                    </a>
+                {% else %}
+                    Unknown
+                {% endif %}
+            </div>
+            {% if ancestor_data.registration_number %}
+                <div class="pedigree-reg small text-muted">
+                    {{ ancestor_data.registration_number }}
+                </div>
+            {% endif %}            {% if ancestor_data.date_of_birth %}
+                <div class="pedigree-birth small text-muted">
+                    {{ ancestor_data.date_of_birth }}
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="text-muted small">Unknown</div>
+    {% endif %}
+{% endmacro %}
+
+{% block title %}{{ dog.name or 'Unknown Dog' }} - Dog Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Dog Information Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                <i class="bi bi-person-badge"></i> {{ dog.name or 'Unknown Dog' }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    {% if dog.registration_number %}
+                        <p><strong>Registration:</strong> {{ dog.registration_number }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if dog.birth_date %}
+                        <p><strong>Birth Date:</strong> {{ dog.birth_date.strftime('%Y-%m-%d') }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if dog.color %}
+                        <p><strong>Color:</strong> {{ dog.color }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    {% if dog.breeder %}
+                        <p><strong>Breeder:</strong> {{ dog.breeder }}</p>
+                    {% endif %}
+                    {% if dog.owner %}
+                        <p><strong>Owner:</strong> {{ dog.owner }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedigree Section -->
+    <h2 class="mb-3">Pedigree Chart</h2>      <form method="get" id="generationForm" class="mb-3" style="display:inline;">
+        <label for="generationSelect" class="form-label">Покажи генерации:</label>
+        <select id="generationSelect" name="show_gen" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+            {% for g in range(1, 10) %}
+                <option value="{{g}}" {% if show_gen == g %}selected{% endif %}>До {{g}} генерации</option>
+            {% endfor %}
+        </select>
+    </form>
+    <div class="card mb-4">
+        <div class="card-header">
+            Pedigree for {{ dog.name or 'Unknown Dog' }} ({{ show_gen }} generations shown)
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0 pedigree-table pedigree-horizontal">                    <thead>
+                        <tr>
+                            {% for gen in range(1, show_gen+1) %}
+                                <th class="text-center gen-{{gen}}-header">{{ gen }}{{ 'st' if gen==1 else 'nd' if gen==2 else 'rd' if gen==3 else 'th' }} generation</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Матрица на поколенията според примера: #}
+                        {# Gen 1: [Баща, Майка] - 2 кутии #}
+                        {# Gen 2: [Дядо по баща, Баба по баща, Дядо по майка, Баба по майка] - 4 кутии #}
+                        {# Gen 3: 8 кутии, Gen 4: 16 кутии и т.н. #}
+                          {% set show_gen = show_gen|int if show_gen is defined else 4 %}
+                        {% set total_rows = 2**show_gen %}
+                        
+                        {# Функция за намиране на предци по път #}
+                        {% macro get_ancestor(dog, path) %}
+                            {% set current = dog %}
+                            {% for c in path %}
+                                {% if current %}
+                                    {% if c == 's' %}
+                                        {% set current = current.sire %}
+                                    {% elif c == 'd' %}
+                                        {% set current = current.dam %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ current }}
+                        {% endmacro %}                        {# Генериране на редовете в матрицата #}
+                        {% for row in range(total_rows) %}
+                            <tr>
+                                {% for gen in range(1, show_gen+1) %}
+                                    {% set cells_in_gen = 2**gen %}
+                                    {% set rows_per_cell = total_rows // cells_in_gen %}
+                                    
+                                    {# Показваме клетка само ако сме в началото на нейния блок #}
+                                    {% if row % rows_per_cell == 0 %}
+                                        {% set cell_index = row // rows_per_cell %}                                        {# Get ancestor from pre-computed matrix #}
+                                        {% set ancestor = ancestor_matrix.get(gen, {}).get(cell_index, None) %}                                          <td class="align-middle gen-{{gen}}" rowspan="{{rows_per_cell}}">
+                                            {{ render_ancestor_from_dict(ancestor) }}
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Tests Section -->
+    {% if health_tests %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Health Tests</h4>
+        </div>
+        <div class="card-body">
+            {{ render_health_tests(health_tests) }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.getElementById('generationSelect').addEventListener('change', function() {
+    document.getElementById('generationForm').submit();
+});
+</script>
+
+{% endblock %}

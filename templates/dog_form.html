@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Dog - PedigreeDatabase{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Add New Dog
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="post" action="/dogs/add">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="registration_number" class="form-label">Registration Number</label>
+                                <input type="text" class="form-control" id="registration_number" name="registration_number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sex" class="form-label">Sex *</label>
+                                <select class="form-select" id="sex" name="sex" required>
+                                    <option value="">Select sex</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="breed" class="form-label">Breed *</label>
+                                <input type="text" class="form-control" id="breed" name="breed" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="color" class="form-label">Color</label>
+                                <input type="text" class="form-control" id="color" name="color">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="kennel_name" class="form-label">Kennel Name</label>
+                                <input type="text" class="form-control" id="kennel_name" name="kennel_name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="breeder" class="form-label">Breeder</label>
+                                <input type="text" class="form-control" id="breeder" name="breeder">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="tatoo_no" class="form-label">Tattoo Number</label>
+                                <input type="text" class="form-control" id="tatoo_no" name="tatoo_no">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="microchip" class="form-label">Microchip</label>
+                                <input type="text" class="form-control" id="microchip" name="microchip">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5>Pedigree Information</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sire_id" class="form-label">Sire (Father)</label>
+                                <select class="form-select" id="sire_id" name="sire_id">
+                                    <option value="">Select sire</option>
+                                    {% for potential_sire in dogs %}
+                                    {% if potential_sire.sex == 'Male' %}
+                                    <option value="{{ potential_sire.id }}">
+                                        {{ potential_sire.name }} ({{ potential_sire.registration_number or 'No Reg #' }})
+                                    </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="dam_id" class="form-label">Dam (Mother)</label>
+                                <select class="form-select" id="dam_id" name="dam_id">
+                                    <option value="">Select dam</option>
+                                    {% for potential_dam in dogs %}
+                                    {% if potential_dam.sex == 'Female' %}
+                                    <option value="{{ potential_dam.id }}">
+                                        {{ potential_dam.name }} ({{ potential_dam.registration_number or 'No Reg #' }})
+                                    </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Dog
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
