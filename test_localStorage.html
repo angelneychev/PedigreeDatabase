@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test localStorage + AJAX</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .loading { color: blue; }
+        .error { color: red; }
+        .success { color: green; }
+        #result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Test localStorage + AJAX Implementation</h1>
+    
+    <div>
+        <label for="generations">Select Generations:</label>
+        <select id="generations">
+            <option value="1">1 generation</option>
+            <option value="2">2 generations</option>
+            <option value="3" selected>3 generations</option>
+            <option value="4">4 generations</option>
+            <option value="5">5 generations</option>
+        </select>
+        <span id="status" class="loading">Loading...</span>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        const generationSelect = document.getElementById('generations');
+        const statusElement = document.getElementById('status');
+        const resultElement = document.getElementById('result');
+        
+        // Test localStorage
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                return value === 'value';
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Load saved generation preference
+        function loadSavedPreference() {
+            if (testLocalStorage()) {
+                const saved = localStorage.getItem('pedigreeGenerations');
+                if (saved) {
+                    generationSelect.value = saved;
+                    statusElement.textContent = `Loaded saved preference: ${saved} generations`;
+                    statusElement.className = 'success';
+                } else {
+                    statusElement.textContent = 'No saved preference found';
+                    statusElement.className = '';
+                }
+            } else {
+                statusElement.textContent = 'localStorage not supported';
+                statusElement.className = 'error';
+            }
+        }
+        
+        // Test AJAX request
+        function testAjax(generations) {
+            statusElement.textContent = `Testing API for ${generations} generations...`;
+            statusElement.className = 'loading';
+            
+            fetch(`http://127.0.0.1:8007/api/dogs/5281/pedigree/${generations}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    statusElement.textContent = `✅ API Success! Dog: ${data.dog.name}`;
+                    statusElement.className = 'success';
+                    
+                    // Display result
+                    resultElement.innerHTML = `
+                        <h3>API Response:</h3>
+                        <p><strong>Dog:</strong> ${data.dog.name}</p>
+                        <p><strong>Generations:</strong> ${data.show_gen}</p>
+                        <p><strong>Has ancestor_matrix:</strong> ${!!data.ancestor_matrix}</p>
+                        <p><strong>Matrix generations:</strong> ${Object.keys(data.ancestor_matrix || {}).join(', ')}</p>
+                        <p><strong>Generation 1 ancestors:</strong> ${data.ancestor_matrix && data.ancestor_matrix['1'] ? Object.keys(data.ancestor_matrix['1']).length : 0}</p>
+                    `;
+                    
+                    // Save preference to localStorage
+                    if (testLocalStorage()) {
+                        localStorage.setItem('pedigreeGenerations', generations.toString());
+                    }
+                })
+                .catch(error => {
+                    statusElement.textContent = `❌ API Error: ${error.message}`;
+                    statusElement.className = 'error';
+                    resultElement.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                });
+        }
+        
+        // Event handlers
+        generationSelect.addEventListener('change', function() {
+            const generations = parseInt(this.value);
+            testAjax(generations);
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedPreference();
+            testAjax(parseInt(generationSelect.value));
+        });
+    </script>
+</body>
+</html>

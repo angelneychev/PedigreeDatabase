@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Storage Final Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        select, button, input {
+            font-size: 16px;
+            padding: 10px;
+            margin: 5px;
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+        .generation-test {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .log {
+            background: #f1f3f4;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔬 Final Mobile Storage Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Device Information</h2>
+        <div id="deviceInfo"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Storage Capability Tests</h2>
+        <div id="storageResults"></div>
+        <button onclick="runStorageTests()">🔄 Test Storage Methods</button>
+    </div>
+      <div class="test-section">
+        <h2>3. Generation Selection Simulation</h2>
+        <div class="generation-test">
+            <label for="generationSelect">Select Generations:</label>
+            <select id="generationSelect">
+                <option value="1">1 Generation</option>
+                <option value="2">2 Generations</option>
+                <option value="3">3 Generations</option>
+                <option value="4" selected>4 Generations</option>
+                <option value="5">5 Generations</option>
+                <option value="6">6 Generations</option>
+                <option value="7">7 Generations</option>
+                <option value="8">8 Generations</option>
+                <option value="9">9 Generations</option>
+            </select>
+            <br>
+            <button onclick="savePreference()">💾 Save Preference</button>
+            <button onclick="loadPreference()">📂 Load Preference</button>
+            <button onclick="clearPreference()">🗑️ Clear Preference</button>
+            <button onclick="demonstrateWorkflow()">🎭 Demo Full Workflow</button>
+        </div>
+        <div id="preferenceStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. API Connectivity Test</h2>
+        <button onclick="testAPI()">🌐 Test API Endpoint</button>
+        <div id="apiResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Event Logs</h2>
+        <div id="eventLog" class="log"></div>
+        <button onclick="clearLog()">🧹 Clear Log</button>
+    </div>
+
+    <script>
+        // Enhanced logging
+        function log(message) {
+            const now = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('eventLog');
+            logElement.innerHTML += `[${now}] ${message}<br>`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            document.getElementById('eventLog').innerHTML = '';
+        }
+        
+        // Device info detection
+        function detectDevice() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                language: navigator.language,
+                storage: {
+                    localStorage: typeof(Storage) !== "undefined" && typeof(localStorage) !== "undefined",
+                    sessionStorage: typeof(sessionStorage) !== "undefined"
+                },
+                screen: {
+                    width: window.screen.width,
+                    height: window.screen.height,
+                    availWidth: window.screen.availWidth,
+                    availHeight: window.screen.availHeight
+                },
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                }
+            };
+            
+            let html = `
+                <strong>User Agent:</strong> ${info.userAgent}<br>
+                <strong>Platform:</strong> ${info.platform}<br>
+                <strong>Cookies Enabled:</strong> ${info.cookieEnabled ? '✅' : '❌'}<br>
+                <strong>Online:</strong> ${info.onLine ? '✅' : '❌'}<br>
+                <strong>Language:</strong> ${info.language}<br>
+                <strong>localStorage Available:</strong> ${info.storage.localStorage ? '✅' : '❌'}<br>
+                <strong>sessionStorage Available:</strong> ${info.storage.sessionStorage ? '✅' : '❌'}<br>
+                <strong>Screen:</strong> ${info.screen.width}x${info.screen.height}<br>
+                <strong>Viewport:</strong> ${info.viewport.width}x${info.viewport.height}<br>
+            `;
+            
+            document.getElementById('deviceInfo').innerHTML = html;
+            log('Device information detected');
+        }
+        
+        // Storage testing functions (same as main app)
+        function isLocalStorageAvailable() {
+            try {
+                const test = '__localStorage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        function saveGenerationPreference(value) {
+            try {
+                if (isLocalStorageAvailable()) {
+                    localStorage.setItem('pedigreeGenerations', value);
+                    return 'localStorage';
+                } else if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.setItem('pedigreeGenerations', value);
+                    return 'sessionStorage';
+                } else {
+                    document.cookie = `pedigreeGenerations=${value}; path=/; max-age=2592000`;
+                    return 'cookie';
+                }
+            } catch (e) {
+                throw new Error(`Storage failed: ${e.message}`);
+            }
+        }
+        
+        function loadGenerationPreference() {
+            try {
+                if (isLocalStorageAvailable()) {
+                    const value = localStorage.getItem('pedigreeGenerations');
+                    return value ? { value, method: 'localStorage' } : null;
+                }
+                if (typeof sessionStorage !== 'undefined') {
+                    const value = sessionStorage.getItem('pedigreeGenerations');
+                    return value ? { value, method: 'sessionStorage' } : null;
+                }
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'pedigreeGenerations') {
+                        return { value, method: 'cookie' };
+                    }
+                }
+            } catch (e) {
+                throw new Error(`Loading failed: ${e.message}`);
+            }
+            return null;
+        }
+        
+        function clearGenerationPreference() {
+            try {
+                if (isLocalStorageAvailable()) {
+                    localStorage.removeItem('pedigreeGenerations');
+                }
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('pedigreeGenerations');
+                }
+                document.cookie = 'pedigreeGenerations=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                log('Preferences cleared from all storage methods');
+            } catch (e) {
+                log(`Error clearing preferences: ${e.message}`);
+            }
+        }
+        
+        // Test functions
+        function runStorageTests() {
+            let results = '';
+            
+            // localStorage test
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                results += `<div class="status ${value === 'value' ? 'success' : 'error'}">
+                    localStorage: ${value === 'value' ? '✅ Working' : '❌ Failed'}
+                </div>`;
+                log(`localStorage test: ${value === 'value' ? 'PASS' : 'FAIL'}`);
+            } catch (e) {
+                results += `<div class="status error">localStorage: ❌ Error - ${e.message}</div>`;
+                log(`localStorage test: ERROR - ${e.message}`);
+            }
+            
+            // sessionStorage test
+            try {
+                sessionStorage.setItem('test', 'value');
+                const value = sessionStorage.getItem('test');
+                sessionStorage.removeItem('test');
+                results += `<div class="status ${value === 'value' ? 'success' : 'error'}">
+                    sessionStorage: ${value === 'value' ? '✅ Working' : '❌ Failed'}
+                </div>`;
+                log(`sessionStorage test: ${value === 'value' ? 'PASS' : 'FAIL'}`);
+            } catch (e) {
+                results += `<div class="status error">sessionStorage: ❌ Error - ${e.message}</div>`;
+                log(`sessionStorage test: ERROR - ${e.message}`);
+            }
+            
+            // Cookie test
+            try {
+                document.cookie = 'test=value; path=/';
+                const cookies = document.cookie.split(';');
+                let found = false;
+                for (let cookie of cookies) {
+                    const [name, cookieValue] = cookie.trim().split('=');
+                    if (name === 'test' && cookieValue === 'value') {
+                        found = true;
+                        break;
+                    }
+                }
+                document.cookie = 'test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                results += `<div class="status ${found ? 'success' : 'error'}">
+                    Cookies: ${found ? '✅ Working' : '❌ Failed'}
+                </div>`;
+                log(`Cookie test: ${found ? 'PASS' : 'FAIL'}`);
+            } catch (e) {
+                results += `<div class="status error">Cookies: ❌ Error - ${e.message}</div>`;
+                log(`Cookie test: ERROR - ${e.message}`);
+            }
+            
+            document.getElementById('storageResults').innerHTML = results;
+        }
+        
+        function savePreference() {
+            const select = document.getElementById('generationSelect');
+            const value = select.value;
+            
+            try {
+                const method = saveGenerationPreference(value);
+                document.getElementById('preferenceStatus').innerHTML = 
+                    `<div class="status success">✅ Saved generation ${value} using ${method}</div>`;
+                log(`Preference saved: ${value} generations using ${method}`);
+            } catch (e) {
+                document.getElementById('preferenceStatus').innerHTML = 
+                    `<div class="status error">❌ Failed to save: ${e.message}</div>`;
+                log(`Save failed: ${e.message}`);
+            }
+        }
+          function loadPreference() {
+            try {
+                const result = loadGenerationPreference();
+                if (result) {
+                    document.getElementById('generationSelect').value = result.value;
+                    document.getElementById('preferenceStatus').innerHTML = 
+                        `<div class="status success">✅ Loaded generation ${result.value} from ${result.method}</div>`;
+                    log(`Preference loaded: ${result.value} generations from ${result.method}`);
+                } else {
+                    document.getElementById('preferenceStatus').innerHTML = 
+                        `<div class="status warning">⚠️ No saved preference found. Using default: ${document.getElementById('generationSelect').value}</div>`;
+                    log(`No saved preference found. Using default: ${document.getElementById('generationSelect').value}`);
+                }
+            } catch (e) {
+                document.getElementById('preferenceStatus').innerHTML = 
+                    `<div class="status error">❌ Failed to load: ${e.message}</div>`;
+                log(`Load failed: ${e.message}`);
+            }
+        }
+          function clearPreference() {
+            clearGenerationPreference();
+            document.getElementById('preferenceStatus').innerHTML = 
+                `<div class="status success">✅ Preferences cleared</div>`;
+        }
+        
+        function demonstrateWorkflow() {
+            log('🎭 Starting workflow demonstration...');
+            
+            // Step 1: Clear everything
+            clearGenerationPreference();
+            log('Step 1: Cleared all preferences');
+            
+            // Step 2: Load (should show no preference)
+            setTimeout(() => {
+                loadPreference();
+                log('Step 2: Attempted to load (should be empty)');
+                
+                // Step 3: Change selection to 7
+                setTimeout(() => {
+                    document.getElementById('generationSelect').value = '7';
+                    log('Step 3: Changed selection to 7 generations');
+                    
+                    // Step 4: Save the preference
+                    setTimeout(() => {
+                        savePreference();
+                        log('Step 4: Saved preference');
+                        
+                        // Step 5: Reset dropdown to default
+                        setTimeout(() => {
+                            document.getElementById('generationSelect').value = '4';
+                            log('Step 5: Reset dropdown to default (4)');
+                            
+                            // Step 6: Load preference (should restore to 7)
+                            setTimeout(() => {
+                                loadPreference();
+                                log('Step 6: Loaded preference (should be 7)');
+                                log('🎭 Workflow demonstration complete!');
+                            }, 1000);
+                        }, 1000);
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        }
+          function testAPI() {
+            const dogId = 5281;
+            const generations = 4;
+            const url = `http://127.0.0.1:8009/api/dogs/${dogId}/pedigree/${generations}`;
+            
+            document.getElementById('apiResults').innerHTML = 
+                `<div class="status warning">🔄 Testing API endpoint...</div>`;
+            log(`Testing API: ${url}`);
+            
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Request timeout')), 15000);
+            });
+            
+            Promise.race([
+                fetch(url),
+                timeoutPromise
+            ])
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const dogName = data.dog ? data.dog.name : 'Unknown';
+                document.getElementById('apiResults').innerHTML = 
+                    `<div class="status success">✅ API working! Dog: ${dogName}</div>`;
+                log(`API test: SUCCESS - Retrieved data for ${dogName}`);
+            })
+            .catch(error => {
+                document.getElementById('apiResults').innerHTML = 
+                    `<div class="status error">❌ API failed: ${error.message}</div>`;
+                log(`API test: FAILED - ${error.message}`);
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('generationSelect').addEventListener('change', function() {
+            log(`Generation selection changed to: ${this.value}`);
+        });
+        
+        // Network connectivity monitoring
+        if ('onLine' in navigator) {
+            window.addEventListener('online', function() {
+                log('Device came online');
+            });
+            
+            window.addEventListener('offline', function() {
+                log('Device went offline');
+            });
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded - initializing tests');
+            detectDevice();
+            runStorageTests();
+            loadPreference(); // Try to load any existing preference
+        });
+    </script>
+</body>
+</html>

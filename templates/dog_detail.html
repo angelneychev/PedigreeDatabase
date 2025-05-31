@@ -32,114 +32,118 @@
 {% block title %}{{ dog.name or 'Unknown Dog' }} - Dog Details{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- Dog Information Card -->
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">
-                <i class="bi bi-person-badge"></i> {{ dog.name or 'Unknown Dog' }}
-            </h3>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3">
+<!-- Full Width Pedigree Layout -->
+<div class="container-fluid p-0">
+    <!-- Hidden connectivity warning for mobile users -->
+    <div id="connectivityWarning" class="connectivity-warning" style="display: none;">
+        <i class="bi bi-wifi-off"></i> 
+        Няма интернет връзка. Генерациите ще се заредят когато връзката се възстанови.
+    </div>
+    
+    <!-- Dog Information Header Bar -->
+    <div class="dog-info-header bg-primary text-white p-3 mb-0">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-badge"></i> {{ dog.name or 'Unknown Dog' }}
+                    </h4>
+                </div>
+                <div class="col-md-2">
                     {% if dog.registration_number %}
-                        <p><strong>Registration:</strong> {{ dog.registration_number }}</p>
+                        <small><strong>Registration:</strong> {{ dog.registration_number }}</small>
                     {% endif %}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     {% if dog.birth_date %}
-                        <p><strong>Birth Date:</strong> {{ dog.birth_date.strftime('%Y-%m-%d') }}</p>
+                        <small><strong>Birth Date:</strong> {{ dog.birth_date.strftime('%Y-%m-%d') }}</small>
                     {% endif %}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     {% if dog.color %}
-                        <p><strong>Color:</strong> {{ dog.color }}</p>
+                        <small><strong>Color:</strong> {{ dog.color }}</small>
                     {% endif %}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     {% if dog.breeder %}
-                        <p><strong>Breeder:</strong> {{ dog.breeder }}</p>
+                        <small><strong>Breeder:</strong> {{ dog.breeder }}</small>
                     {% endif %}
                     {% if dog.owner %}
-                        <p><strong>Owner:</strong> {{ dog.owner }}</p>
+                        <small><strong>Owner:</strong> {{ dog.owner }}</small>
                     {% endif %}
+                </div>
+                <div class="col-md-2 text-end">
+                    <select id="generationSelect" class="form-select form-select-sm generation-selector">
+                        {% for g in range(1, 10) %}
+                            <option value="{{g}}" {% if show_gen == g %}selected{% endif %}>{{g}}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="loadingSpinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Pedigree Section -->
-    <h2 class="mb-3">Pedigree Chart</h2>      <form method="get" id="generationForm" class="mb-3" style="display:inline;">
-        <label for="generationSelect" class="form-label">Покажи генерации:</label>
-        <select id="generationSelect" name="show_gen" class="form-select form-select-sm" style="width: auto; display: inline-block;">
-            {% for g in range(1, 10) %}
-                <option value="{{g}}" {% if show_gen == g %}selected{% endif %}>До {{g}} генерации</option>
-            {% endfor %}
-        </select>
-    </form>
-    <div class="card mb-4">
-        <div class="card-header">
-            Pedigree for {{ dog.name or 'Unknown Dog' }} ({{ show_gen }} generations shown)
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0 pedigree-table pedigree-horizontal">                    <thead>
-                        <tr>
-                            {% for gen in range(1, show_gen+1) %}
-                                <th class="text-center gen-{{gen}}-header">{{ gen }}{{ 'st' if gen==1 else 'nd' if gen==2 else 'rd' if gen==3 else 'th' }} generation</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {# Матрица на поколенията според примера: #}
-                        {# Gen 1: [Баща, Майка] - 2 кутии #}
-                        {# Gen 2: [Дядо по баща, Баба по баща, Дядо по майка, Баба по майка] - 4 кутии #}
-                        {# Gen 3: 8 кутии, Gen 4: 16 кутии и т.н. #}
-                          {% set show_gen = show_gen|int if show_gen is defined else 4 %}
-                        {% set total_rows = 2**show_gen %}
-                        
-                        {# Функция за намиране на предци по път #}
-                        {% macro get_ancestor(dog, path) %}
-                            {% set current = dog %}
-                            {% for c in path %}
-                                {% if current %}
-                                    {% if c == 's' %}
-                                        {% set current = current.sire %}
-                                    {% elif c == 'd' %}
-                                        {% set current = current.dam %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                            {{ current }}
-                        {% endmacro %}                        {# Генериране на редовете в матрицата #}
-                        {% for row in range(total_rows) %}
-                            <tr>
-                                {% for gen in range(1, show_gen+1) %}
-                                    {% set cells_in_gen = 2**gen %}
-                                    {% set rows_per_cell = total_rows // cells_in_gen %}
-                                    
-                                    {# Показваме клетка само ако сме в началото на нейния блок #}
-                                    {% if row % rows_per_cell == 0 %}
-                                        {% set cell_index = row // rows_per_cell %}                                        {# Get ancestor from pre-computed matrix #}
-                                        {% set ancestor = ancestor_matrix.get(gen, {}).get(cell_index, None) %}                                          <td class="align-middle gen-{{gen}}" rowspan="{{rows_per_cell}}">
-                                            {{ render_ancestor_from_dict(ancestor) }}
-                                        </td>
-                                    {% endif %}
-                                {% endfor %}
-                            </tr>
+    
+    <!-- Pedigree Table - Full Width, No Card Wrapper -->    <div class="table-responsive">
+        <table class="table table-bordered mb-0 pedigree-table pedigree-horizontal" id="pedigreeTable">
+            <thead>
+                <tr>
+                    {% for gen in range(1, show_gen+1) %}
+                        <th class="text-center gen-{{gen}}-header">{{ gen }}{{ 'st' if gen==1 else 'nd' if gen==2 else 'rd' if gen==3 else 'th' }} generation</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {# Матрица на поколенията според примера: #}
+                {# Gen 1: [Баща, Майка] - 2 кутии #}
+                {# Gen 2: [Дядо по баща, Баба по баща, Дядо по майка, Баба по майка] - 4 кутии #}
+                {# Gen 3: 8 кутии, Gen 4: 16 кутии и т.н. #}
+                  {% set show_gen = show_gen|int if show_gen is defined else 4 %}
+                {% set total_rows = 2**show_gen %}
+                
+                {# Функция за намиране на предци по път #}
+                {% macro get_ancestor(dog, path) %}
+                    {% set current = dog %}
+                    {% for c in path %}
+                        {% if current %}
+                            {% if c == 's' %}
+                                {% set current = current.sire %}
+                            {% elif c == 'd' %}
+                                {% set current = current.dam %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ current }}
+                {% endmacro %}                        {# Генериране на редовете в матрицата #}
+                {% for row in range(total_rows) %}
+                    <tr>
+                        {% for gen in range(1, show_gen+1) %}
+                            {% set cells_in_gen = 2**gen %}
+                            {% set rows_per_cell = total_rows // cells_in_gen %}
+                            
+                            {# Показваме клетка само ако сме в началото на нейния блок #}
+                            {% if row % rows_per_cell == 0 %}
+                                {% set cell_index = row // rows_per_cell %}                                        {# Get ancestor from pre-computed matrix #}
+                                {% set ancestor = ancestor_matrix.get(gen, {}).get(cell_index, None) %}                                          <td class="align-middle gen-{{gen}}" rowspan="{{rows_per_cell}}">
+                                    {{ render_ancestor_from_dict(ancestor) }}
+                                </td>
+                            {% endif %}
                         {% endfor %}
-                        
-                    </tbody>
-                </table>
-            </div>
+                    </tr>
+                {% endfor %}
+                
+            </tbody>                </table>
         </div>
     </div>
+</div>
 
-    <!-- Health Tests Section -->
+<!-- Health Tests Section -->
+<div class="container-fluid mt-4">
     {% if health_tests %}
     <div class="card mb-4">
-        <div class="card-header">
+        <div class="card-header bg-light">
             <h4 class="mb-0">Health Tests</h4>
         </div>
         <div class="card-body">
@@ -150,9 +154,458 @@
 </div>
 
 <script>
-document.getElementById('generationSelect').addEventListener('change', function() {
-    document.getElementById('generationForm').submit();
+document.addEventListener('DOMContentLoaded', function() {
+    const generationSelect = document.getElementById('generationSelect');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const pedigreeTable = document.getElementById('pedigreeTable');
+    const connectivityWarning = document.getElementById('connectivityWarning');
+    
+    // Network connectivity detection
+    function isOnline() {
+        return navigator.onLine !== false; // Default to true if property not supported
+    }
+      function showConnectivityWarning(show) {
+        if (connectivityWarning) {
+            connectivityWarning.style.display = show ? 'block' : 'none';
+        }
+    }
+    
+    // Listen for online/offline events (mobile support)
+    if ('onLine' in navigator) {
+        window.addEventListener('online', function() {
+            showConnectivityWarning(false);
+            // Retry loading current selection when back online
+            const currentGen = parseInt(generationSelect.value);
+            loadPedigreeData(currentGen);
+        });
+        
+        window.addEventListener('offline', function() {
+            showConnectivityWarning(true);
+        });
+        
+        // Check initial connectivity state
+        if (!isOnline()) {
+            showConnectivityWarning(true);
+        }
+    }
+    
+    // Safe localStorage functions with fallback to cookies/sessionStorage
+    function isLocalStorageAvailable() {
+        try {
+            const test = '__localStorage_test__';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    function savePreference(value) {
+        try {
+            if (isLocalStorageAvailable()) {
+                localStorage.setItem('pedigreeGenerations', value);
+            } else if (typeof sessionStorage !== 'undefined') {
+                // Fallback to sessionStorage (lasts for session only)
+                sessionStorage.setItem('pedigreeGenerations', value);
+            } else {
+                // Fallback to cookie (works on very old browsers)
+                document.cookie = `pedigreeGenerations=${value}; path=/; max-age=2592000`; // 30 days
+            }
+        } catch (e) {
+            console.warn('Could not save preference:', e);
+        }
+    }
+    
+    function loadPreference() {
+        try {
+            // Try localStorage first
+            if (isLocalStorageAvailable()) {
+                return localStorage.getItem('pedigreeGenerations');
+            }
+            // Try sessionStorage
+            if (typeof sessionStorage !== 'undefined') {
+                return sessionStorage.getItem('pedigreeGenerations');
+            }
+            // Try cookie fallback
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'pedigreeGenerations') {
+                    return value;
+                }
+            }
+        } catch (e) {
+            console.warn('Could not load preference:', e);
+        }
+        return null;
+    }
+    
+    // Load user's preferred generation count with mobile-safe fallbacks
+    const savedGenerations = loadPreference();
+    if (savedGenerations) {
+        const generations = parseInt(savedGenerations);
+        if (generations >= 1 && generations <= 9) {
+            generationSelect.value = generations;
+            // Load pedigree data for saved preference
+            loadPedigreeData(generations);
+        }
+    } else {
+        // Load pedigree data for current selection
+        loadPedigreeData(parseInt(generationSelect.value));
+    }
+      // Handle generation selection change
+    generationSelect.addEventListener('change', function() {
+        const selectedGenerations = parseInt(this.value);
+        
+        // Save user preference using mobile-safe method
+        savePreference(selectedGenerations.toString());
+        
+        // Load new pedigree data
+        loadPedigreeData(selectedGenerations);
+    });
+      function loadPedigreeData(generations) {
+        // Check connectivity first (mobile-friendly)
+        if (!isOnline()) {
+            showConnectivityWarning(true);
+            loadingSpinner.style.display = 'none';
+            return;
+        }
+        
+        // Show loading spinner
+        loadingSpinner.style.display = 'inline-block';
+        
+        // Get current dog ID from URL
+        const dogId = window.location.pathname.split('/').pop();
+        
+        // Add timeout for mobile networks (slower connections)
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Request timeout')), 15000); // 15 seconds
+        });
+        
+        // Make AJAX request with timeout
+        Promise.race([
+            fetch(`/api/dogs/${dogId}/pedigree/${generations}`),
+            timeoutPromise
+        ])
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok (${response.status})`);
+                }
+                return response.json();
+            })            .then(data => {
+                // Generate and update pedigree table content
+                updatePedigreeTable(data, generations);
+                
+                // Hide loading spinner
+                loadingSpinner.style.display = 'none';
+                showConnectivityWarning(false);
+            })
+            .catch(error => {
+                console.error('Error loading pedigree data:', error);
+                
+                // More detailed error messages for mobile debugging
+                let errorMessage = 'Error loading pedigree data.';
+                if (error.message.includes('timeout')) {
+                    errorMessage = 'Request timeout. Check your internet connection.';
+                } else if (error.message.includes('Network')) {
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                } else if (!isOnline()) {
+                    errorMessage = 'No internet connection. Please connect and try again.';
+                    showConnectivityWarning(true);
+                }
+                
+                pedigreeTable.innerHTML = `
+                    <thead><tr><th colspan="4">Error</th></tr></thead>
+                    <tbody><tr><td colspan="4">
+                        <div class="alert alert-danger m-3">
+                            <i class="bi bi-exclamation-triangle"></i> 
+                            ${errorMessage}
+                            ${!isOnline() ? '' : '<br><button class="btn btn-sm btn-outline-primary mt-2" onclick="location.reload()">Retry</button>'}
+                        </div>
+                    </td></tr></tbody>
+                `;
+                loadingSpinner.style.display = 'none';
+            });
+    }
+    
+    function updatePedigreeTable(data, generations) {
+        const table = pedigreeTable;
+          // Update table header
+        const thead = table.querySelector('thead tr');
+        thead.innerHTML = '';
+        for (let gen = 1; gen <= generations; gen++) {
+            const suffix = gen === 1 ? 'st' : gen === 2 ? 'nd' : gen === 3 ? 'rd' : 'th';
+            thead.innerHTML += `<th class="text-center gen-${gen}-header">${gen}${suffix} generation</th>`;
+        }
+        
+        // Update table body
+        const tbody = table.querySelector('tbody');
+        tbody.innerHTML = '';
+        
+        const totalRows = Math.pow(2, generations);
+        const matrix = data.ancestor_matrix || {};
+        
+        for (let row = 0; row < totalRows; row++) {
+            const tr = document.createElement('tr');            for (let gen = 1; gen <= generations; gen++) {
+                const cellsInGen = Math.pow(2, gen);
+                const rowsPerCell = totalRows / cellsInGen;
+                
+                // Only show cell if it's the first row for this ancestor in this generation
+                if (row % rowsPerCell === 0) {
+                    const ancestorIndex = Math.floor(row / rowsPerCell);
+                    const rowspan = rowsPerCell;
+                    // The ancestor_matrix structure is: matrix[generation][position]
+                    const ancestor = matrix[gen] && matrix[gen][ancestorIndex] ? matrix[gen][ancestorIndex] : null;
+                    
+                    const td = document.createElement('td');
+                    td.rowSpan = rowspan;
+                    td.className = `align-middle gen-${gen}`;
+                    
+                    if (ancestor && ancestor.name) {
+                        const inbredClass = ancestor.inbred_level ? `inbred-${ancestor.inbred_level}` : '';
+                        td.innerHTML = `
+                            <div class="pedigree-dog ${inbredClass}">
+                                <div class="pedigree-name">
+                                    <a href="/dogs/${ancestor.id}" class="dog-link">
+                                        ${ancestor.name}
+                                    </a>
+                                </div>
+                                ${ancestor.registration_number ? `<div class="pedigree-reg small text-muted">${ancestor.registration_number}</div>` : ''}
+                                ${ancestor.date_of_birth ? `<div class="pedigree-birth small text-muted">${ancestor.date_of_birth}</div>` : ''}
+                            </div>
+                        `;
+                    } else {
+                        td.innerHTML = '<div class="text-muted small">Unknown</div>';
+                    }
+                    
+                    tr.appendChild(td);
+                }
+            }
+            
+            tbody.appendChild(tr);
+        }
+    }
 });
 </script>
 
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Dog Information Header Bar */
+.dog-info-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-bottom: 3px solid #004085;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dog-info-header h4 {
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.dog-info-header small {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    line-height: 1.3;
+}
+
+/* Generation Selector in Header */
+.generation-selector {
+    background-color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #333;
+    font-weight: 600;
+    width: 60px;
+    text-align: center;
+    display: inline-block;
+}
+
+.generation-selector:focus {
+    background-color: #fff;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
+}
+
+/* Full-width pedigree table styling */
+.pedigree-table {
+    font-size: 0.9rem;
+    border: none;
+    margin: 0;
+    width: 100%;
+}
+
+.pedigree-table th {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    font-weight: 600;
+    text-align: center;
+    padding: 12px 8px;
+}
+
+.pedigree-table td {
+    min-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid #dee2e6;
+    padding: 8px;
+}
+
+/* Remove all container constraints for true full width */
+.container-fluid {
+    padding: 0;
+    margin: 0;
+    max-width: none;
+}
+
+.table-responsive {
+    border: none;
+    margin: 0;
+}
+
+/* Enhanced pedigree cell styling */
+.pedigree-dog, .pedigree-box {
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    margin: 2px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.pedigree-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #007bff;
+}
+
+.pedigree-reg, .pedigree-birth {
+    font-size: 0.75rem;
+    color: #6c757d;
+    line-height: 1.2;
+}
+
+.dog-link {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.dog-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Mobile-responsive styles */
+@media (max-width: 768px) {
+    .dog-info-header .row > div {
+        padding: 3px 8px;
+    }
+    
+    .dog-info-header h4 {
+        font-size: 1.1rem;
+    }
+    
+    .dog-info-header small {
+        font-size: 0.7rem;
+    }
+    
+    .generation-selector {
+        width: 50px;
+        font-size: 14px;
+        padding: 4px 6px;
+        touch-action: manipulation;
+    }
+    
+    .pedigree-table th,
+    .pedigree-table td {
+        min-width: 120px;
+        font-size: 0.8rem;
+        padding: 6px 4px;
+    }
+    
+    .pedigree-dog, .pedigree-box {
+        padding: 6px;
+        min-height: 50px;
+    }
+    
+    .pedigree-name {
+        font-size: 0.8rem;
+    }
+    
+    .pedigree-reg, .pedigree-birth {
+        font-size: 0.65rem;
+    }
+    
+    /* Better touch targets for mobile */
+    .dog-link {
+        padding: 4px 8px;
+        display: inline-block;
+        min-height: 44px; /* iOS recommended touch target */
+        line-height: 1.4;
+    }
+    
+    /* Prevent text selection on mobile */
+    .pedigree-table {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Loading spinner positioning */
+    #loadingSpinner {
+        display: block !important;
+        margin: 5px auto;
+        position: relative;
+    }
+}
+
+/* Ultra-wide screen optimization */
+@media (min-width: 1400px) {
+    .pedigree-table td {
+        min-width: 180px;
+        font-size: 1rem;
+    }
+    
+    .pedigree-dog, .pedigree-box {
+        padding: 12px;
+        min-height: 70px;
+    }
+}
+
+/* Offline/connectivity indicator */
+.connectivity-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove any margin/padding that could limit full width */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+</style>
 {% endblock %}

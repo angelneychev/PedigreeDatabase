@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile localStorage Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid;
+        }
+        .success { border-color: #28a745; background-color: #d4edda; }
+        .warning { border-color: #ffc107; background-color: #fff3cd; }
+        .error { border-color: #dc3545; background-color: #f8d7da; }
+        .info { border-color: #17a2b8; background-color: #d1ecf1; }
+        
+        select {
+            font-size: 16px; /* Prevents zoom on iOS */
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+            touch-action: manipulation;
+        }
+        
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 5px;
+            touch-action: manipulation;
+            min-height: 44px; /* iOS touch target */
+        }
+        
+        .device-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔬 Mobile localStorage Test</h1>
+    
+    <div class="device-info">
+        <h3>Device Information:</h3>
+        <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+        <p><strong>Online:</strong> <span id="onlineStatus"></span></p>
+        <p><strong>Touch Support:</strong> <span id="touchSupport"></span></p>
+        <p><strong>Screen Size:</strong> <span id="screenSize"></span></p>
+    </div>
+    
+    <div>
+        <h3>localStorage Tests:</h3>
+        <div id="localStorageTest"></div>
+        <div id="sessionStorageTest"></div>
+        <div id="cookieTest"></div>
+    </div>
+    
+    <div>
+        <h3>Generation Selection Test:</h3>
+        <label for="generations">Select generations:</label>
+        <select id="generations">
+            <option value="1">1 generation</option>
+            <option value="2">2 generations</option>
+            <option value="3" selected>3 generations</option>
+            <option value="4">4 generations</option>
+            <option value="5">5 generations</option>
+        </select>
+        
+        <div>
+            <button onclick="saveTest()">Save Preference</button>
+            <button onclick="loadTest()">Load Preference</button>
+            <button onclick="clearTest()">Clear All</button>
+        </div>
+        
+        <div id="preferenceResult"></div>
+    </div>
+    
+    <div>
+        <h3>Network Test:</h3>
+        <button onclick="testAPI()">Test API Call</button>
+        <div id="networkResult"></div>
+    </div>
+
+    <script>
+        // Display device information
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('userAgent').textContent = navigator.userAgent;
+            document.getElementById('onlineStatus').textContent = navigator.onLine ? 'Yes' : 'No';
+            document.getElementById('touchSupport').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+            document.getElementById('screenSize').textContent = `${window.screen.width}x${window.screen.height}`;
+            
+            runStorageTests();
+            loadTest(); // Load any existing preference
+        });
+        
+        // Test storage methods
+        function runStorageTests() {
+            // localStorage test
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                if (value === 'value') {
+                    showResult('localStorageTest', '✅ localStorage: Working', 'success');
+                } else {
+                    showResult('localStorageTest', '❌ localStorage: Failed read test', 'error');
+                }
+            } catch (e) {
+                showResult('localStorageTest', `❌ localStorage: ${e.message}`, 'error');
+            }
+            
+            // sessionStorage test
+            try {
+                sessionStorage.setItem('test', 'value');
+                const value = sessionStorage.getItem('test');
+                sessionStorage.removeItem('test');
+                if (value === 'value') {
+                    showResult('sessionStorageTest', '✅ sessionStorage: Working', 'success');
+                } else {
+                    showResult('sessionStorageTest', '❌ sessionStorage: Failed read test', 'error');
+                }
+            } catch (e) {
+                showResult('sessionStorageTest', `❌ sessionStorage: ${e.message}`, 'error');
+            }
+            
+            // Cookie test
+            try {
+                document.cookie = 'test=value; path=/';
+                const cookies = document.cookie.split(';');
+                let found = false;
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'test' && value === 'value') {
+                        found = true;
+                        break;
+                    }
+                }
+                // Clean up
+                document.cookie = 'test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                
+                if (found) {
+                    showResult('cookieTest', '✅ Cookies: Working', 'success');
+                } else {
+                    showResult('cookieTest', '❌ Cookies: Failed read test', 'error');
+                }
+            } catch (e) {
+                showResult('cookieTest', `❌ Cookies: ${e.message}`, 'error');
+            }
+        }
+        
+        // Show test result
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+        
+        // Storage functions (same as in main app)
+        function isLocalStorageAvailable() {
+            try {
+                const test = '__localStorage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        function savePreference(value) {
+            let method = 'none';
+            try {
+                if (isLocalStorageAvailable()) {
+                    localStorage.setItem('pedigreeGenerations', value);
+                    method = 'localStorage';
+                } else if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.setItem('pedigreeGenerations', value);
+                    method = 'sessionStorage';
+                } else {
+                    document.cookie = `pedigreeGenerations=${value}; path=/; max-age=2592000`;
+                    method = 'cookie';
+                }
+            } catch (e) {
+                console.warn('Could not save preference:', e);
+                method = 'failed: ' + e.message;
+            }
+            return method;
+        }
+        
+        function loadPreference() {
+            try {
+                if (isLocalStorageAvailable()) {
+                    return { value: localStorage.getItem('pedigreeGenerations'), method: 'localStorage' };
+                }
+                if (typeof sessionStorage !== 'undefined') {
+                    return { value: sessionStorage.getItem('pedigreeGenerations'), method: 'sessionStorage' };
+                }
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'pedigreeGenerations') {
+                        return { value: value, method: 'cookie' };
+                    }
+                }
+            } catch (e) {
+                console.warn('Could not load preference:', e);
+                return { value: null, method: 'failed: ' + e.message };
+            }
+            return { value: null, method: 'none found' };
+        }
+        
+        // Test functions
+        function saveTest() {
+            const select = document.getElementById('generations');
+            const value = select.value;
+            const method = savePreference(value);
+            showResult('preferenceResult', `💾 Saved "${value}" using: ${method}`, 'info');
+        }
+        
+        function loadTest() {
+            const result = loadPreference();
+            const select = document.getElementById('generations');
+            
+            if (result.value) {
+                select.value = result.value;
+                showResult('preferenceResult', `📖 Loaded "${result.value}" from: ${result.method}`, 'success');
+            } else {
+                showResult('preferenceResult', `📖 No preference found (${result.method})`, 'warning');
+            }
+        }
+        
+        function clearTest() {
+            try {
+                localStorage.removeItem('pedigreeGenerations');
+                sessionStorage.removeItem('pedigreeGenerations');
+                document.cookie = 'pedigreeGenerations=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+                showResult('preferenceResult', '🗑️ All preferences cleared', 'info');
+            } catch (e) {
+                showResult('preferenceResult', `❌ Clear failed: ${e.message}`, 'error');
+            }
+        }
+        
+        function testAPI() {
+            showResult('networkResult', '⏳ Testing API...', 'info');
+            
+            const timeout = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Timeout')), 10000)
+            );
+            
+            Promise.race([
+                fetch('http://127.0.0.1:8007/api/dogs/5281/pedigree/3'),
+                timeout
+            ])
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            })
+            .then(data => {
+                showResult('networkResult', `✅ API Success: ${data.dog.name}`, 'success');
+            })
+            .catch(error => {
+                showResult('networkResult', `❌ API Failed: ${error.message}`, 'error');
+            });
+        }
+        
+        // Online/offline detection
+        window.addEventListener('online', function() {
+            document.getElementById('onlineStatus').textContent = 'Yes';
+        });
+        
+        window.addEventListener('offline', function() {
+            document.getElementById('onlineStatus').textContent = 'No';
+        });
+    </script>
+</body>
+</html>

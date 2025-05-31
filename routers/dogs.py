@@ -59,14 +59,10 @@ async def list_dogs_page(request: Request, skip: int = 0, limit: int = 20, db: S
 from fastapi import Query
 
 @router.get("/dogs/{dog_id}", response_class=HTMLResponse)
-async def read_dog_page(request: Request, dog_id: int, db: Session = Depends(get_db), show_gen: Optional[int] = Query(None)):
-    # Validate show_gen (must be between 1 and 9)
-    try:
-        show_gen_int = int(show_gen) if show_gen is not None else 4
-        if show_gen_int < 1 or show_gen_int > 9:
-            show_gen_int = 4
-    except (ValueError, TypeError):
-        show_gen_int = 4
+async def read_dog_page(request: Request, dog_id: int, db: Session = Depends(get_db)):
+    # Default generation count
+    default_generations = 4
+    show_gen_int = default_generations
 
     dog = crud.get_dog(db, dog_id=dog_id)
     if dog is None:
@@ -74,7 +70,7 @@ async def read_dog_page(request: Request, dog_id: int, db: Session = Depends(get
 
     # Get pedigree information for the requested number of generations
     pedigree_dog = crud.get_dog_pedigree(db, dog_id=dog_id, generations=show_gen_int)
-    health_tests = crud.get_dog_health_tests(db, dog_id=dog_id)    # Get additional information
+    health_tests = crud.get_dog_health_tests(db, dog_id=dog_id)# Get additional information
     from utils import get_health_summary, search_related_dogs, calculate_age_from_birth_date, get_pedigree_completeness, detect_pedigree_inbreeding
     
     health_summary = get_health_summary(dog)
@@ -183,6 +179,47 @@ async def read_dog_pedigree_page(request: Request, dog_id: int, db: Session = De
         "pedigree_completeness": pedigree_completeness
     })
 
+# API endpoint for getting pedigree data with specific generation count
+@router.get("/api/dogs/{dog_id}/pedigree/{generations}")
+async def get_dog_pedigree_api(dog_id: int, generations: int, db: Session = Depends(get_db)):
+    # Validate generations parameter
+    if generations < 1 or generations > 9:
+        raise HTTPException(status_code=400, detail="Generations must be between 1 and 9")
+    
+    # Get dog and pedigree information for the requested number of generations
+    pedigree_dog = crud.get_dog_pedigree(db, dog_id=dog_id, generations=generations)
+    if pedigree_dog is None:
+        raise HTTPException(status_code=404, detail="Dog not found")
+
+    # Get additional information
+    from utils import get_pedigree_completeness, detect_pedigree_inbreeding
+    
+    pedigree_completeness = get_pedigree_completeness(pedigree_dog, db, generations)
+    # Detect inbreeding in specified generations for highlighting
+    inbreeding_data = detect_pedigree_inbreeding(pedigree_dog, generations=generations)
+
+    # Convert dog object to dict for JSON serialization
+    dog_dict = {
+        "id": pedigree_dog.id,
+        "name": pedigree_dog.name,
+        "registration_number": pedigree_dog.registration_number,
+        "sex": pedigree_dog.sex,
+        "date_of_birth": pedigree_dog.date_of_birth.isoformat() if pedigree_dog.date_of_birth else None,
+        "color": pedigree_dog.color,
+        "breed": pedigree_dog.breed,
+        "kennel_name": pedigree_dog.kennel_name,
+        "breeder": pedigree_dog.breeder
+    }
+
+    return {
+        "dog": dog_dict,
+        "pedigree": getattr(pedigree_dog, 'pedigree_data', None),
+        "ancestor_matrix": getattr(pedigree_dog, 'ancestor_matrix', {}),
+        "pedigree_completeness": pedigree_completeness,
+        "inbreeding_data": inbreeding_data,
+        "show_gen": generations
+    }
+
 # API Routes
 @router.get("/api/dogs/", response_model=List[schemas.Dog])
 def read_dogs_api(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -213,10 +250,3 @@ def delete_dog_api(dog_id: int, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(status_code=404, detail="Dog not found")
     return {"message": "Dog deleted successfully"}
-
-@router.get("/api/dogs/{dog_id}/pedigree", response_model=schemas.DogPedigree)
-def get_dog_pedigree_api(dog_id: int, db: Session = Depends(get_db)):
-    dog = crud.get_dog_pedigree(db, dog_id=dog_id)
-    if dog is None:
-        raise HTTPException(status_code=404, detail="Dog not found")
-    return dog

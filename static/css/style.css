@@ -821,3 +821,26 @@ td.inbred.inbred-6 {
         font-size: 0.8rem;
     }
 }
+
+/* Full-width layout styles for pedigree pages */
+.main-content {
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+}
+
+/* Ensure container-fluid truly uses full width */
+.container-fluid {
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+}
+
+/* Remove any default body margins that could interfere */
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+}
