@@ -63,6 +63,8 @@ When adding new data sources:
 - Follow the existing Estonian import structure
 - Include proper validation and logging
 - Document the data format in README
+- **⚠️ Important**: Place data files in `data/` directory - they are excluded from Git
+- Data files are too large for GitHub and should be stored locally only
 
 ## 🧪 Testing
 
