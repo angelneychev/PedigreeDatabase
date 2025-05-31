@@ -1,0 +1,3 @@
+# This file ensures the data directory is preserved in Git
+# Place your JSON data files here - they will be ignored by Git
+# Example: dalmatian_dogs_estonia_DDMMYYYY.json

@@ -107,3 +107,15 @@ Thumbs.db
 config/local_config.py
 *.backup
 temp/
+
+# Data files - too large for GitHub
+data_import/importers/*/data/*.json
+data_import/importers/*/data/*.csv
+data_import/importers/*/data/*.xlsx
+data_import/importers/*/data/*.xml
+data_import/importers/*/logs/*.log
+data_import/importers/*/logs/*.txt
+
+# Keep data directories but exclude their contents
+!data_import/importers/*/data/.gitkeep
+!data_import/importers/*/logs/.gitkeep
