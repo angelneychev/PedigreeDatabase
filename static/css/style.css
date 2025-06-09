@@ -424,6 +424,116 @@
     box-shadow: 0 2px 8px rgba(214, 158, 46, 0.2) !important;
 }
 
+/* Inbreeding level highlighting for pedigree dogs */
+.pedigree-dog.inbred-low {
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+    border: 2px solid #38a169;
+    box-shadow: 0 2px 6px rgba(56, 161, 105, 0.2);
+}
+
+.pedigree-dog.inbred-moderate {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px solid #d97706;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.2);
+}
+
+.pedigree-dog.inbred-high {
+    background: linear-gradient(135deg, #fffaf0 0%, #fbd38d 100%);
+    border: 2px solid #f56500;
+    box-shadow: 0 2px 6px rgba(245, 101, 0, 0.2);
+}
+
+.pedigree-dog.inbred-very-high {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+    border: 2px solid #e53e3e;
+    box-shadow: 0 2px 6px rgba(229, 62, 62, 0.3);
+    animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+/* Hover effects for inbred dogs */
+.pedigree-dog.inbred-low:hover {
+    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(56, 161, 105, 0.3);
+}
+
+.pedigree-dog.inbred-moderate:hover {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(217, 119, 6, 0.3);
+}
+
+.pedigree-dog.inbred-high:hover {
+    background: linear-gradient(135deg, #fbd38d 0%, #f6ad55 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(245, 101, 0, 0.3);
+}
+
+.pedigree-dog.inbred-very-high:hover {
+    background: linear-gradient(135deg, #fed7d7 0%, #fc8181 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.4);
+}
+
+/* Tooltip for inbreeding info */
+.pedigree-dog[data-coi]:hover::after {
+    content: "Common ancestor - appears " attr(data-coi) " times";
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    z-index: 1000;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.pedigree-dog.inbred-1 {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%) !important;
+    border: 2px solid #e53e3e !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.2) !important;
+}
+
+.pedigree-dog.inbred-2 {
+    background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%) !important;
+    border: 2px solid #3182ce !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(49, 130, 206, 0.2) !important;
+}
+
+.pedigree-dog.inbred-3 {
+    background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%) !important;
+    border: 2px solid #38a169 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(56, 161, 105, 0.2) !important;
+}
+
+.pedigree-dog.inbred-4 {
+    background: linear-gradient(135deg, #fffaf0 0%, #fbd38d 100%) !important;
+    border: 2px solid #dd6b20 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(221, 107, 32, 0.2) !important;
+}
+
+.pedigree-dog.inbred-5 {
+    background: linear-gradient(135deg, #faf5ff 0%, #e9d8fd 100%) !important;
+    border: 2px solid #805ad5 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(128, 90, 213, 0.2) !important;
+}
+
+.pedigree-dog.inbred-6 {
+    background: linear-gradient(135deg, #fffff0 0%, #faf089 100%) !important;
+    border: 2px solid #d69e2e !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(214, 158, 46, 0.2) !important;
+}
+
 /* Elegant cell styling for inbred ancestors */
 td.inbred {
     position: relative !important;

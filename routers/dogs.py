@@ -6,6 +6,7 @@ from typing import List, Optional
 import crud
 import schemas
 from database import get_db
+from models import Dog
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -153,35 +154,78 @@ async def read_dog_pedigree_page(request: Request, dog_id: int, db: Session = De
     if dog is None:
         raise HTTPException(status_code=404, detail="Dog not found")
     
-    # Get siblings (dogs with same parents)
+    # Simplified - no siblings for now due to SQLAlchemy issues
     siblings = []
-    if dog.sire_id or dog.dam_id:
-        from sqlalchemy import and_, or_
-        from models import Dog
-        
-        sibling_query = db.query(Dog).filter(
-            Dog.id != dog.id,  # Exclude the dog itself
-            or_(
-                and_(Dog.sire_id == dog.sire_id, Dog.sire_id.isnot(None)),
-                and_(Dog.dam_id == dog.dam_id, Dog.dam_id.isnot(None))
-            )
-        ).order_by(Dog.name)
-        
-        siblings = sibling_query.all()
-        
-        # Get health tests for siblings
-        for sibling in siblings:
-            sibling.health_tests = crud.get_dog_health_tests(db, dog_id=sibling.id)
     
-    # Get pedigree completeness
-    from utils import get_pedigree_completeness
+    # Get pedigree completeness and inbreeding data
+    from utils import get_pedigree_completeness, detect_pedigree_inbreeding, calculate_inbreeding_coefficient
     pedigree_completeness = get_pedigree_completeness(dog, db, 4)  # 4 generations
+    inbreeding_data = detect_pedigree_inbreeding(dog, generations=4)
+    
+    # Add inbreeding levels to each dog in the pedigree
+    def add_inbreeding_info(dog_obj):
+        if dog_obj:
+            try:
+                coi_data = calculate_inbreeding_coefficient(dog_obj, db, generations=4)
+                coi_percentage = coi_data.get('coi_percentage', 0.0)
+                
+                # Determine inbreeding level based on COI percentage
+                if coi_percentage == 0.0:
+                    inbred_level = None  # No highlighting
+                elif coi_percentage < 3.125:
+                    inbred_level = 'low'  # Green
+                elif coi_percentage < 6.25:
+                    inbred_level = 'moderate'  # Yellow
+                elif coi_percentage < 12.5:
+                    inbred_level = 'high'  # Orange
+                else:
+                    inbred_level = 'very-high'  # Red
+                
+                dog_obj.coi_percentage = coi_percentage
+                dog_obj.inbred_level = inbred_level
+            except Exception as e:
+                # If COI calculation fails, don't highlight
+                dog_obj.coi_percentage = 0.0
+                dog_obj.inbred_level = None
+        return dog_obj
+    
+    # Process all dogs in the pedigree tree
+    add_inbreeding_info(dog)
+    if hasattr(dog, 'sire') and dog.sire:
+        add_inbreeding_info(dog.sire)
+        if hasattr(dog.sire, 'sire') and dog.sire.sire:
+            add_inbreeding_info(dog.sire.sire)
+            if hasattr(dog.sire.sire, 'sire') and dog.sire.sire.sire:
+                add_inbreeding_info(dog.sire.sire.sire)
+            if hasattr(dog.sire.sire, 'dam') and dog.sire.sire.dam:
+                add_inbreeding_info(dog.sire.sire.dam)
+        if hasattr(dog.sire, 'dam') and dog.sire.dam:
+            add_inbreeding_info(dog.sire.dam)
+            if hasattr(dog.sire.dam, 'sire') and dog.sire.dam.sire:
+                add_inbreeding_info(dog.sire.dam.sire)
+            if hasattr(dog.sire.dam, 'dam') and dog.sire.dam.dam:
+                add_inbreeding_info(dog.sire.dam.dam)
+    if hasattr(dog, 'dam') and dog.dam:
+        add_inbreeding_info(dog.dam)
+        if hasattr(dog.dam, 'sire') and dog.dam.sire:
+            add_inbreeding_info(dog.dam.sire)
+            if hasattr(dog.dam.sire, 'sire') and dog.dam.sire.sire:
+                add_inbreeding_info(dog.dam.sire.sire)
+            if hasattr(dog.dam.sire, 'dam') and dog.dam.sire.dam:
+                add_inbreeding_info(dog.dam.sire.dam)
+        if hasattr(dog.dam, 'dam') and dog.dam.dam:
+            add_inbreeding_info(dog.dam.dam)
+            if hasattr(dog.dam.dam, 'sire') and dog.dam.dam.sire:
+                add_inbreeding_info(dog.dam.dam.sire)
+            if hasattr(dog.dam.dam, 'dam') and dog.dam.dam.dam:
+                add_inbreeding_info(dog.dam.dam.dam)
     
     return templates.TemplateResponse("pedigree_horizontal.html", {
         "request": request, 
         "dog": dog,
         "siblings": siblings,
-        "pedigree_completeness": pedigree_completeness
+        "pedigree_completeness": pedigree_completeness,
+        "inbreeding_data": inbreeding_data
     })
 
 # API endpoint for getting pedigree data with specific generation count
@@ -190,18 +234,77 @@ async def get_dog_pedigree_api(dog_id: int, generations: int, db: Session = Depe
     # Validate generations parameter
     if generations < 1 or generations > 9:
         raise HTTPException(status_code=400, detail="Generations must be between 1 and 9")
-    
-    # Get dog and pedigree information for the requested number of generations
+      # Get dog and pedigree information for the requested number of generations
     pedigree_dog = crud.get_dog_pedigree(db, dog_id=dog_id, generations=generations)
     if pedigree_dog is None:
         raise HTTPException(status_code=404, detail="Dog not found")
-
+    
     # Get additional information
-    from utils import get_pedigree_completeness, detect_pedigree_inbreeding
+    from utils import get_pedigree_completeness, detect_pedigree_inbreeding, calculate_inbreeding_coefficient
     
     pedigree_completeness = get_pedigree_completeness(pedigree_dog, db, generations)
     # Detect inbreeding in specified generations for highlighting
     inbreeding_data = detect_pedigree_inbreeding(pedigree_dog, generations=generations)
+    
+    def add_coi_data_to_matrix(matrix, db):
+        """Add individual COI data to each ancestor in the matrix"""
+        for generation, ancestors in matrix.items():
+            for position, ancestor in ancestors.items():
+                if ancestor and isinstance(ancestor, dict) and 'id' in ancestor:
+                    ancestor_id = ancestor['id']
+                    
+                    # Calculate COI for this individual ancestor
+                    try:
+                        ancestor_dog = db.query(Dog).filter(Dog.id == ancestor_id).first()
+                        if ancestor_dog:
+                            coi_data = calculate_inbreeding_coefficient(ancestor_dog, db, generations=5)
+                            matrix[generation][position]['coi_percentage'] = coi_data['coi_percentage']
+                            matrix[generation][position]['coi_interpretation'] = coi_data['interpretation']
+                        else:
+                            matrix[generation][position]['coi_percentage'] = 0.0
+                    except Exception as e:
+                        # If COI calculation fails, set to 0
+                        matrix[generation][position]['coi_percentage'] = 0.0
+        return matrix
+    
+    def add_inbreeding_levels_to_matrix(matrix, inbreeding_data):
+        """Add inbreeding levels to each ancestor in the matrix based on common ancestors"""
+        # Convert inbreeding_data keys to integers for comparison
+        inbred_ancestor_ids = {int(k): v for k, v in inbreeding_data.items()}
+        
+        for generation, ancestors in matrix.items():
+            # ancestors is a dict with position as key, ancestor dict as value
+            for position, ancestor in ancestors.items():
+                if ancestor and isinstance(ancestor, dict) and 'id' in ancestor:
+                    ancestor_id = ancestor['id']
+                    
+                    # Check if this ancestor is a common ancestor in main dog's pedigree
+                    if ancestor_id in inbred_ancestor_ids:
+                        inbred_info = inbred_ancestor_ids[ancestor_id]
+                        color_index = inbred_info['color_index']
+                        
+                        # Map color index to inbreeding level (limited to 6 for CSS)
+                        if color_index <= 6:
+                            inbred_level = str(color_index)
+                        else:
+                            inbred_level = '6'  # Max level for CSS
+                        
+                        # Add inbreeding highlighting to ancestor
+                        matrix[generation][position]['inbred_level'] = inbred_level
+                        matrix[generation][position]['is_common_ancestor'] = True
+                        matrix[generation][position]['common_ancestor_count'] = inbred_info['count']
+                        matrix[generation][position]['common_ancestor_color'] = inbred_info['color']
+                    else:
+                        # Not a common ancestor - no highlighting
+                        matrix[generation][position]['inbred_level'] = None
+                        matrix[generation][position]['is_common_ancestor'] = False
+        
+        return matrix
+    
+    # Add inbreeding highlighting based on common ancestors detected in main dog's pedigree
+    ancestor_matrix = getattr(pedigree_dog, 'ancestor_matrix', {})
+    ancestor_matrix_with_inbreeding = add_inbreeding_levels_to_matrix(ancestor_matrix, inbreeding_data)
+    ancestor_matrix_with_coi = add_coi_data_to_matrix(ancestor_matrix_with_inbreeding, db)
 
     # Convert dog object to dict for JSON serialization
     dog_dict = {
@@ -209,7 +312,7 @@ async def get_dog_pedigree_api(dog_id: int, generations: int, db: Session = Depe
         "name": pedigree_dog.name,
         "registration_number": pedigree_dog.registration_number,
         "sex": pedigree_dog.sex,
-        "date_of_birth": pedigree_dog.date_of_birth.isoformat() if pedigree_dog.date_of_birth else None,
+        "date_of_birth": pedigree_dog.date_of_birth.isoformat() if pedigree_dog.date_of_birth is not None else None,
         "color": pedigree_dog.color,
         "breed": pedigree_dog.breed,
         "kennel_name": pedigree_dog.kennel_name,
@@ -219,7 +322,7 @@ async def get_dog_pedigree_api(dog_id: int, generations: int, db: Session = Depe
     return {
         "dog": dog_dict,
         "pedigree": getattr(pedigree_dog, 'pedigree_data', None),
-        "ancestor_matrix": getattr(pedigree_dog, 'ancestor_matrix', {}),
+        "ancestor_matrix": ancestor_matrix_with_coi,
         "pedigree_completeness": pedigree_completeness,
         "inbreeding_data": inbreeding_data,
         "show_gen": generations

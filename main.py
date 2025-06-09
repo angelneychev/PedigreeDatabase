@@ -15,19 +15,6 @@ app = FastAPI(title="PedigreeDatabase", description="Dog Pedigree Management Sys
 # Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Test files for mobile localStorage testing
-@app.get("/mobile_test.html")
-async def mobile_test():
-    return FileResponse("mobile_test.html")
-
-@app.get("/test_localStorage.html")  
-async def test_localstorage():
-    return FileResponse("test_localStorage.html")
-
-@app.get("/test_mobile_storage.html")
-async def test_mobile_storage():
-    return FileResponse("test_mobile_storage.html")
-
 # Include routers
 app.include_router(dogs.router)
 app.include_router(health.router)

@@ -6,7 +6,7 @@
     {% if ancestor_data %}
         <div class="pedigree-box">
             <div class="pedigree-name">
-                {% if ancestor_data.name %}
+                {% if ancestor_data %}
                     <a href="/dogs/{{ ancestor_data.id }}" class="dog-link">
                         {{ ancestor_data.name }}
                     </a>
@@ -319,66 +319,93 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td></tr></tbody>
                 `;
                 loadingSpinner.style.display = 'none';
-            });
-    }
-    
+            });    }
+  
     function updatePedigreeTable(data, generations) {
-        const table = pedigreeTable;
-          // Update table header
-        const thead = table.querySelector('thead tr');
-        thead.innerHTML = '';
-        for (let gen = 1; gen <= generations; gen++) {
-            const suffix = gen === 1 ? 'st' : gen === 2 ? 'nd' : gen === 3 ? 'rd' : 'th';
-            thead.innerHTML += `<th class="text-center gen-${gen}-header">${gen}${suffix} generation</th>`;
-        }
-        
-        // Update table body
-        const tbody = table.querySelector('tbody');
-        tbody.innerHTML = '';
-        
-        const totalRows = Math.pow(2, generations);
-        const matrix = data.ancestor_matrix || {};
-        
-        for (let row = 0; row < totalRows; row++) {
-            const tr = document.createElement('tr');            for (let gen = 1; gen <= generations; gen++) {
-                const cellsInGen = Math.pow(2, gen);
-                const rowsPerCell = totalRows / cellsInGen;
-                
-                // Only show cell if it's the first row for this ancestor in this generation
-                if (row % rowsPerCell === 0) {
-                    const ancestorIndex = Math.floor(row / rowsPerCell);
-                    const rowspan = rowsPerCell;
-                    // The ancestor_matrix structure is: matrix[generation][position]
-                    const ancestor = matrix[gen] && matrix[gen][ancestorIndex] ? matrix[gen][ancestorIndex] : null;
-                    
-                    const td = document.createElement('td');
-                    td.rowSpan = rowspan;
-                    td.className = `align-middle gen-${gen}`;
-                    
-                    if (ancestor && ancestor.name) {
-                        const inbredClass = ancestor.inbred_level ? `inbred-${ancestor.inbred_level}` : '';
-                        td.innerHTML = `
-                            <div class="pedigree-dog ${inbredClass}">
-                                <div class="pedigree-name">
-                                    <a href="/dogs/${ancestor.id}" class="dog-link">
-                                        ${ancestor.name}
-                                    </a>
-                                </div>
-                                ${ancestor.registration_number ? `<div class="pedigree-reg small text-muted">${ancestor.registration_number}</div>` : ''}
-                                ${ancestor.date_of_birth ? `<div class="pedigree-birth small text-muted">${ancestor.date_of_birth}</div>` : ''}
-                            </div>
-                        `;
-                    } else {
-                        td.innerHTML = '<div class="text-muted small">Unknown</div>';
-                    }
-                    
-                    tr.appendChild(td);
-                }
+        try {
+            const table = pedigreeTable;
+            if (!table) {
+                throw new Error('Pedigree table element not found');
             }
             
-            tbody.appendChild(tr);
-        }
+            const inbreedingData = data.inbreeding_data || {};
+            
+            // Update table header
+            const thead = table.querySelector('thead tr');
+            if (!thead) {
+                throw new Error('Table header not found');
+            }
+            
+            thead.innerHTML = '';
+            for (let gen = 1; gen <= generations; gen++) {
+                const suffix = gen === 1 ? 'st' : gen === 2 ? 'nd' : gen === 3 ? 'rd' : 'th';
+                thead.innerHTML += `<th class="text-center gen-${gen}-header">${gen}${suffix} generation</th>`;
+            }
+            
+            // Update table body
+            const tbody = table.querySelector('tbody');
+            if (!tbody) {
+                throw new Error('Table body not found');
+            }
+            tbody.innerHTML = '';
+            
+            const totalRows = Math.pow(2, generations);
+            const matrix = data.ancestor_matrix || {};
+            
+            for (let row = 0; row < totalRows; row++) {
+                const tr = document.createElement('tr');
+                
+                for (let gen = 1; gen <= generations; gen++) {
+                    const cellsInGen = Math.pow(2, gen);
+                    const rowsPerCell = Math.floor(totalRows / cellsInGen);
+                    
+                    // Only show cell if it's the first row for this ancestor in this generation
+                    if (row % rowsPerCell === 0) {
+                        const ancestorIndex = Math.floor(row / rowsPerCell);
+                        const rowspan = rowsPerCell;
+                        
+                        // The ancestor_matrix structure is: matrix[generation][position]
+                        const ancestor = matrix[gen] && matrix[gen][ancestorIndex] ? matrix[gen][ancestorIndex] : null;
+                        
+                        const td = document.createElement('td');
+                        td.rowSpan = rowspan;
+                        td.className = `align-middle gen-${gen}`;
+                        
+                        if (ancestor && ancestor.name) {
+                            // Get inbreeding info from inbreeding_data using ancestor ID
+                            const ancestorId = ancestor.id.toString();
+                            const inbredInfo = inbreedingData[ancestorId];
+                            
+                            const inbredClass = inbredInfo ? `inbred-${inbredInfo.color_index}` : '';
+                            const coiData = inbredInfo ? `data-coi="${inbredInfo.count}"` : '';
+                            const coiTitle = inbredInfo ? `title="Common ancestor - appears ${inbredInfo.count} times in pedigree"` : '';
+                            
+                            td.innerHTML = `
+                                <div class="pedigree-dog ${inbredClass}" ${coiData} ${coiTitle}>
+                                    <div class="pedigree-name">
+                                        <a href="/dogs/${ancestor.id}" class="dog-link">
+                                            ${ancestor.name}
+                                        </a>
+                                    </div>
+                                    ${ancestor.registration_number ? `<div class="pedigree-reg small text-muted">${ancestor.registration_number}</div>` : ''}
+                                    ${ancestor.date_of_birth ? `<div class="pedigree-birth small text-muted">${ancestor.date_of_birth}</div>` : ''}
+                                </div>
+                            `;
+                        } else {
+                            td.innerHTML = '<div class="text-muted small">Unknown</div>';
+                        }
+                        
+                        tr.appendChild(td);
+                    }
+                }
+                
+                tbody.appendChild(tr);
+            }
+    } catch (error) {
+        console.error('Error in updatePedigreeTable:', error);
+        throw error; // Re-throw to be caught by the main catch block
     }
+}
 });
 </script>
 

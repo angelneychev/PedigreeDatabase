@@ -176,6 +176,34 @@ The core feature uses a binary path algorithm for ancestor positioning. When wor
 - Test with multiple generation levels (1-9)
 - Ensure matrix structure remains consistent
 
+### Inbreeding Analysis & COI System
+The COI (Coefficient of Inbreeding) highlighting system provides visual analysis of common ancestors:
+
+#### Key Components:
+- **Backend**: `detect_pedigree_inbreeding()` in `utils.py` - detects common ancestors
+- **API**: Enhanced pedigree endpoint returns `inbreeding_data` with highlighting info
+- **Frontend**: JavaScript processes inbreeding data and applies visual highlighting
+- **CSS**: Tooltip system shows common ancestor frequency on hover
+
+#### Testing COI Features:
+```bash
+# Test API endpoint
+curl http://localhost:8007/api/dogs/{Id}}/pedigree/4
+
+# Expected response includes:
+# "inbreeding_data": {
+#   "4992": {"count": 2, "color": "#FFE6E6", "color_index": 1},
+#   "4987": {"count": 2, "color": "#E6F3FF", "color_index": 2}
+# }
+```
+
+#### Development Guidelines for COI:
+- Always test with dogs that have known inbreeding (e.g., dog ID 4888)
+- Verify both API response structure and frontend highlighting
+- Ensure tooltips display correctly on hover
+- Test across different generation levels (3-6 generations recommended)
+- Colors should be distinct and accessible
+
 ### Data Import System
 When adding new data sources:
 - Create a new folder in `data_import/importers/[country]/`
@@ -192,25 +220,34 @@ When adding new data sources:
 - Verify data import functionality
 - Check responsive design on different screen sizes
 - Test database operations
+- **Test COI highlighting**: Verify common ancestors are highlighted with correct tooltips
+- **Test API endpoints**: Ensure inbreeding data is returned correctly
 
 ### Manual testing
 - Create test dogs with known pedigree relationships
 - Verify parent-child relationships display correctly
 - Test health test recording and display
+- **Test inbreeding detection**: Use dog ID 4888 which has known common ancestors
+- **Verify tooltips**: Hover over highlighted ancestors to confirm tooltip content
 
 ## 📋 Areas for Contribution
 
 ### High Priority
 - Additional country data importers (Germany, France, USA, etc.)
-- Inbreeding coefficient calculations
-- PDF export functionality
 - User authentication system
+- Advanced COI analysis features (Wright's coefficient, relationship calculations)
 
 ### Medium Priority
-- Advanced search filters
+- Advanced search filters with COI-based sorting
 - Photo gallery integration
-- Genetic test tracking
+- Genetic test tracking and integration with COI analysis
 - Mobile app development
+- Breeding recommendation system based on COI analysis
+
+### Recently Completed ✅
+- **COI Highlighting System**: Visual inbreeding analysis with tooltips
+- **Common Ancestor Detection**: Multi-generation analysis across pedigree
+- **Interactive Pedigree Matrix**: Real-time highlighting and hover effects
 
 ### Documentation
 - API documentation improvements
@@ -234,6 +271,56 @@ For new features:
 2. Describe the use case and benefits
 3. Consider implementation complexity
 4. Provide mockups for UI features
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**COI Highlighting Not Working:**
+```bash
+# Check API response
+curl http://localhost:8007/api/dogs/{Id}}/pedigree/4
+
+# Expected: inbreeding_data should contain entries
+# If empty, check utils.py detect_pedigree_inbreeding function
+```
+
+**Database Connection Issues:**
+```bash
+# Verify database is running
+mysql -u root -p
+
+# Check database.py configuration
+# Ensure DATABASE_URL matches your setup
+```
+
+**Virtual Environment Issues:**
+```powershell
+# Windows: Ensure virtual environment is activated
+.\venv\Scripts\Activate.ps1
+
+# You should see (venv) in your prompt
+```
+
+**API Endpoints Not Working:**
+```bash
+# Restart development server
+python -m uvicorn main:app --host 127.0.0.1 --port 8007 --reload
+
+# Check server logs for errors
+```
+
+### Performance Issues
+
+**Slow COI Analysis:**
+- Reduce generation depth (try 4 instead of 6+)
+- Check database indexes on parent relationships
+- Monitor memory usage with large pedigrees
+
+**Database Query Optimization:**
+- Ensure proper indexes on `sire_id` and `dam_id` columns
+- Use EXPLAIN on slow queries
+- Consider query result caching for frequently accessed pedigrees
 
 ## 📚 Resources
 

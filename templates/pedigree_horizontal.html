@@ -56,11 +56,9 @@
                             </thead>
                             <tbody>
                                 <!-- Sire side -->
-                                <tr>
-                                    <!-- 1st Generation - Sire -->
-                                    <td rowspan="8" class="align-middle sire-cell">
-                                        {% if dog.sire %}
-                                        <div class="pedigree-dog male">
+                                <tr>                                    <!-- 1st Generation - Sire -->
+                                    <td rowspan="8" class="align-middle sire-cell">                                        {% if dog.sire %}
+                                        <div class="pedigree-dog male" data-dog-id="{{ dog.sire.id }}">
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.id }}" class="text-decoration-none">
                                                     <strong>{{ dog.sire.name }}</strong>
@@ -76,12 +74,10 @@
                                             <strong>Unknown Sire</strong>
                                         </div>
                                         {% endif %}
-                                    </td>
-                                    
-                                    <!-- 2nd Generation - Paternal Grandfather -->
+                                    </td>                                      <!-- 2nd Generation - Paternal Grandfather -->
                                     <td rowspan="4" class="align-middle">
                                         {% if dog.sire and dog.sire.sire %}
-                                        <div class="pedigree-dog male">
+                                        <div class="pedigree-dog male" data-dog-id="{{ dog.sire.sire.id }}">
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.sire.id }}" class="text-decoration-none">
                                                     <strong>{{ dog.sire.sire.name }}</strong>
@@ -96,11 +92,12 @@
                                         <div class="pedigree-dog unknown">Unknown</div>
                                         {% endif %}
                                     </td>
-                                    
-                                    <!-- 3rd Generation - Paternal Great-Grandfather (Sire) -->
+                                      <!-- 3rd Generation - Paternal Great-Grandfather (Sire) -->
                                     <td rowspan="2" class="align-middle">
                                         {% if dog.sire and dog.sire.sire and dog.sire.sire.sire %}
-                                        <div class="pedigree-dog male">
+                                        <div class="pedigree-dog male {% if dog.sire.sire.sire.inbred_level %}inbred-{{ dog.sire.sire.sire.inbred_level }}{% endif %}"
+                                             {% if dog.sire.sire.sire.coi_percentage %}data-coi="{{ dog.sire.sire.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.sire.sire.coi_percentage|floatformat:2 }}% - {{ dog.sire.sire.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.sire.sire.id }}" class="text-decoration-none">
                                                     {{ dog.sire.sire.sire.name }}
@@ -114,9 +111,11 @@
                                     </td>
                                     
                                     <!-- 4th Generation - Great-Great-Grandfather -->
-                                    <td class="align-middle">
+                                    <td class="align-middle">                                        
                                         {% if dog.sire and dog.sire.sire and dog.sire.sire.sire and dog.sire.sire.sire.sire %}
-                                        <div class="pedigree-dog male small">
+                                        <div class="pedigree-dog male small {% if dog.sire.sire.sire.sire.inbred_level %}inbred-{{ dog.sire.sire.sire.sire.inbred_level }}{% endif %}"
+                                             {% if dog.sire.sire.sire.sire.coi_percentage %}data-coi="{{ dog.sire.sire.sire.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.sire.sire.sire.coi_percentage|floatformat:2 }}%"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.sire.sire.sire.id }}" class="text-decoration-none">
                                                 {{ dog.sire.sire.sire.sire.name }}
                                             </a>
@@ -128,9 +127,11 @@
                                 </tr>
                                 <tr>
                                     <!-- 4th Generation - Great-Great-Grandmother -->
-                                    <td class="align-middle">
+                                    <td class="align-middle">                                        
                                         {% if dog.sire and dog.sire.sire and dog.sire.sire.sire and dog.sire.sire.sire.dam %}
-                                        <div class="pedigree-dog female small">
+                                        <div class="pedigree-dog female small {% if dog.sire.sire.sire.dam.inbred_level %}inbred-{{ dog.sire.sire.sire.dam.inbred_level }}{% endif %}"
+                                             {% if dog.sire.sire.sire.dam.coi_percentage %}data-coi="{{ dog.sire.sire.sire.dam.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.sire.sire.dam.coi_percentage|floatformat:2 }}%"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.sire.sire.dam.id }}" class="text-decoration-none">
                                                 {{ dog.sire.sire.sire.dam.name }}
                                             </a>
@@ -142,9 +143,11 @@
                                 </tr>
                                 <tr>
                                     <!-- 3rd Generation - Paternal Great-Grandmother (Dam) -->
-                                    <td rowspan="2" class="align-middle">
+                                    <td rowspan="2" class="align-middle">                                        
                                         {% if dog.sire and dog.sire.sire and dog.sire.sire.dam %}
-                                        <div class="pedigree-dog female">
+                                        <div class="pedigree-dog female {% if dog.sire.sire.dam.inbred_level %}inbred-{{ dog.sire.sire.dam.inbred_level }}{% endif %}"
+                                             {% if dog.sire.sire.dam.coi_percentage %}data-coi="{{ dog.sire.sire.dam.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.sire.dam.coi_percentage|floatformat:2 }}% - {{ dog.sire.sire.dam.inbred_level|title }} inbreeding level"{% endif %}>
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.sire.dam.id }}" class="text-decoration-none">
                                                     {{ dog.sire.sire.dam.name }}
@@ -157,10 +160,12 @@
                                         {% endif %}
                                     </td>
                                     
-                                    <!-- 4th Generation -->
-                                    <td class="align-middle">
+                                    <!-- 4th Generation -->                                    
+                                     <td class="align-middle">
                                         {% if dog.sire and dog.sire.sire and dog.sire.sire.dam and dog.sire.sire.dam.sire %}
-                                        <div class="pedigree-dog male small">
+                                        <div class="pedigree-dog male small {% if dog.sire.sire.dam.sire.inbred_level %}inbred-{{ dog.sire.sire.dam.sire.inbred_level }}{% endif %}"
+                                             {% if dog.sire.sire.dam.sire.coi_percentage %}data-coi="{{ dog.sire.sire.dam.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.sire.dam.sire.coi_percentage|floatformat:2 }}% - {{ dog.sire.sire.dam.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.sire.dam.sire.id }}" class="text-decoration-none">
                                                 {{ dog.sire.sire.dam.sire.name }}
                                             </a>
@@ -171,10 +176,12 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <!-- 4th Generation -->
-                                    <td class="align-middle">
+                                    <!-- 4th Generation -->                                    
+                                     <td class="align-middle">
                                         {% if dog.sire and dog.sire.sire and dog.sire.sire.dam and dog.sire.sire.dam.dam %}
-                                        <div class="pedigree-dog female small">
+                                        <div class="pedigree-dog female small {% if dog.sire.sire.dam.dam.inbred_level %}inbred-{{ dog.sire.sire.dam.dam.inbred_level }}{% endif %}"
+                                             {% if dog.sire.sire.dam.dam.coi_percentage %}data-coi="{{ dog.sire.sire.dam.dam.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.sire.dam.dam.coi_percentage|floatformat:2 }}% - {{ dog.sire.sire.dam.dam.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.sire.dam.dam.id }}" class="text-decoration-none">
                                                 {{ dog.sire.sire.dam.dam.name }}
                                             </a>
@@ -188,9 +195,8 @@
                                 <!-- Continue with the rest of the sire side (paternal grandmother) -->
                                 <tr>
                                     <!-- 2nd Generation - Paternal Grandmother -->
-                                    <td rowspan="4" class="align-middle">
-                                        {% if dog.sire and dog.sire.dam %}
-                                        <div class="pedigree-dog female">
+                                    <td rowspan="4" class="align-middle">                                          {% if dog.sire and dog.sire.dam %}
+                                        <div class="pedigree-dog female" data-dog-id="{{ dog.sire.dam.id }}">
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.dam.id }}" class="text-decoration-none">
                                                     <strong>{{ dog.sire.dam.name }}</strong>
@@ -205,11 +211,12 @@
                                         <div class="pedigree-dog unknown">Unknown</div>
                                         {% endif %}
                                     </td>
-                                    
-                                    <!-- 3rd Generation - Paternal Great-Grandfather (Dam side) -->
+                                      <!-- 3rd Generation - Paternal Great-Grandfather (Dam side) -->
                                     <td rowspan="2" class="align-middle">
                                         {% if dog.sire and dog.sire.dam and dog.sire.dam.sire %}
-                                        <div class="pedigree-dog male">
+                                        <div class="pedigree-dog male {% if dog.sire.dam.sire.inbred_level %}inbred-{{ dog.sire.dam.sire.inbred_level }}{% endif %}"
+                                             {% if dog.sire.dam.sire.coi_percentage %}data-coi="{{ dog.sire.dam.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.dam.sire.coi_percentage|floatformat:2 }}% - {{ dog.sire.dam.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.dam.sire.id }}" class="text-decoration-none">
                                                     {{ dog.sire.dam.sire.name }}
@@ -222,10 +229,11 @@
                                         {% endif %}
                                     </td>
                                     
-                                    <!-- 4th Generation -->
-                                    <td class="align-middle">
+                                    <!-- 4th Generation -->                                    <td class="align-middle">
                                         {% if dog.sire and dog.sire.dam and dog.sire.dam.sire and dog.sire.dam.sire.sire %}
-                                        <div class="pedigree-dog male small">
+                                        <div class="pedigree-dog male small {% if dog.sire.dam.sire.sire.inbred_level %}inbred-{{ dog.sire.dam.sire.sire.inbred_level }}{% endif %}"
+                                             {% if dog.sire.dam.sire.sire.coi_percentage %}data-coi="{{ dog.sire.dam.sire.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.dam.sire.sire.coi_percentage|floatformat:2 }}% - {{ dog.sire.dam.sire.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.dam.sire.sire.id }}" class="text-decoration-none">
                                                 {{ dog.sire.dam.sire.sire.name }}
                                             </a>
@@ -236,10 +244,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <!-- 4th Generation -->
-                                    <td class="align-middle">
+                                    <!-- 4th Generation -->                                    <td class="align-middle">
                                         {% if dog.sire and dog.sire.dam and dog.sire.dam.sire and dog.sire.dam.sire.dam %}
-                                        <div class="pedigree-dog female small">
+                                        <div class="pedigree-dog female small {% if dog.sire.dam.sire.dam.inbred_level %}inbred-{{ dog.sire.dam.sire.dam.inbred_level }}{% endif %}"
+                                             {% if dog.sire.dam.sire.dam.coi_percentage %}data-coi="{{ dog.sire.dam.sire.dam.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.dam.sire.dam.coi_percentage|floatformat:2 }}% - {{ dog.sire.dam.sire.dam.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.dam.sire.dam.id }}" class="text-decoration-none">
                                                 {{ dog.sire.dam.sire.dam.name }}
                                             </a>
@@ -250,10 +259,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <!-- 3rd Generation - Paternal Great-Grandmother (Dam side) -->
-                                    <td rowspan="2" class="align-middle">
+                                    <!-- 3rd Generation - Paternal Great-Grandmother (Dam side) -->                                    <td rowspan="2" class="align-middle">
                                         {% if dog.sire and dog.sire.dam and dog.sire.dam.dam %}
-                                        <div class="pedigree-dog female">
+                                        <div class="pedigree-dog female {% if dog.sire.dam.dam.inbred_level %}inbred-{{ dog.sire.dam.dam.inbred_level }}{% endif %}"
+                                             {% if dog.sire.dam.dam.coi_percentage %}data-coi="{{ dog.sire.dam.dam.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.dam.dam.coi_percentage|floatformat:2 }}% - {{ dog.sire.dam.dam.inbred_level|title }} inbreeding level"{% endif %}>
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.sire.dam.dam.id }}" class="text-decoration-none">
                                                     {{ dog.sire.dam.dam.name }}
@@ -265,11 +275,12 @@
                                         <div class="pedigree-dog unknown">Unknown</div>
                                         {% endif %}
                                     </td>
-                                    
-                                    <!-- 4th Generation -->
+                                      <!-- 4th Generation -->
                                     <td class="align-middle">
                                         {% if dog.sire and dog.sire.dam and dog.sire.dam.dam and dog.sire.dam.dam.sire %}
-                                        <div class="pedigree-dog male small">
+                                        <div class="pedigree-dog male small {% if dog.sire.dam.dam.sire.inbred_level %}inbred-{{ dog.sire.dam.dam.sire.inbred_level }}{% endif %}"
+                                             {% if dog.sire.dam.dam.sire.coi_percentage %}data-coi="{{ dog.sire.dam.dam.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.dam.dam.sire.coi_percentage|floatformat:2 }}% - {{ dog.sire.dam.dam.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.dam.dam.sire.id }}" class="text-decoration-none">
                                                 {{ dog.sire.dam.dam.sire.name }}
                                             </a>
@@ -278,12 +289,13 @@
                                         <div class="pedigree-dog unknown small">Unknown</div>
                                         {% endif %}
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr>                                <tr>
                                     <!-- 4th Generation -->
                                     <td class="align-middle">
                                         {% if dog.sire and dog.sire.dam and dog.sire.dam.dam and dog.sire.dam.dam.dam %}
-                                        <div class="pedigree-dog female small">
+                                        <div class="pedigree-dog female small {% if dog.sire.dam.dam.dam.inbred_level %}inbred-{{ dog.sire.dam.dam.dam.inbred_level }}{% endif %}"
+                                             {% if dog.sire.dam.dam.dam.coi_percentage %}data-coi="{{ dog.sire.dam.dam.dam.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.sire.dam.dam.dam.coi_percentage|floatformat:2 }}% - {{ dog.sire.dam.dam.dam.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.sire.dam.dam.dam.id }}" class="text-decoration-none">
                                                 {{ dog.sire.dam.dam.dam.name }}
                                             </a>
@@ -295,11 +307,9 @@
                                 </tr>
 
                                 <!-- Dam side - exactly the same structure -->
-                                <tr>
-                                    <!-- 1st Generation - Dam -->
-                                    <td rowspan="8" class="align-middle dam-cell">
+                                <tr>                                    <!-- 1st Generation - Dam -->                                    <td rowspan="8" class="align-middle dam-cell">
                                         {% if dog.dam %}
-                                        <div class="pedigree-dog female">
+                                        <div class="pedigree-dog female" data-dog-id="{{ dog.dam.id }}">
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.dam.id }}" class="text-decoration-none">
                                                     <strong>{{ dog.dam.name }}</strong>
@@ -316,11 +326,9 @@
                                         </div>
                                         {% endif %}
                                     </td>
-                                    
-                                    <!-- 2nd Generation - Maternal Grandfather -->
-                                    <td rowspan="4" class="align-middle">
-                                        {% if dog.dam and dog.dam.sire %}
-                                        <div class="pedigree-dog male">
+                                      <!-- 2nd Generation - Maternal Grandfather -->
+                                    <td rowspan="4" class="align-middle">                                        {% if dog.dam and dog.dam.sire %}
+                                        <div class="pedigree-dog male" data-dog-id="{{ dog.dam.sire.id }}">
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.dam.sire.id }}" class="text-decoration-none">
                                                     <strong>{{ dog.dam.sire.name }}</strong>
@@ -335,11 +343,12 @@
                                         <div class="pedigree-dog unknown">Unknown</div>
                                         {% endif %}
                                     </td>
-                                    
-                                    <!-- 3rd Generation - Maternal Great-Grandfather (Sire) -->
+                                      <!-- 3rd Generation - Maternal Great-Grandfather (Sire) -->
                                     <td rowspan="2" class="align-middle">
                                         {% if dog.dam and dog.dam.sire and dog.dam.sire.sire %}
-                                        <div class="pedigree-dog male">
+                                        <div class="pedigree-dog male {% if dog.dam.sire.sire.inbred_level %}inbred-{{ dog.dam.sire.sire.inbred_level }}{% endif %}"
+                                             {% if dog.dam.sire.sire.coi_percentage %}data-coi="{{ dog.dam.sire.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.dam.sire.sire.coi_percentage|floatformat:2 }}% - {{ dog.dam.sire.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <div class="dog-name">
                                                 <a href="/dogs/{{ dog.dam.sire.sire.id }}" class="text-decoration-none">
                                                     {{ dog.dam.sire.sire.name }}
@@ -354,8 +363,9 @@
                                     
                                     <!-- 4th Generation -->
                                     <td class="align-middle">
-                                        {% if dog.dam and dog.dam.sire and dog.dam.sire.sire and dog.dam.sire.sire.sire %}
-                                        <div class="pedigree-dog male small">
+                                        {% if dog.dam and dog.dam.sire and dog.dam.sire.sire and dog.dam.sire.sire.sire %}                                        <div class="pedigree-dog male small {% if dog.dam.sire.sire.sire.inbred_level %}inbred-{{ dog.dam.sire.sire.sire.inbred_level }}{% endif %}"
+                                             {% if dog.dam.sire.sire.sire.coi_percentage %}data-coi="{{ dog.dam.sire.sire.sire.coi_percentage|floatformat:2 }}" 
+                                             title="COI: {{ dog.dam.sire.sire.sire.coi_percentage|floatformat:2 }}% - {{ dog.dam.sire.sire.sire.inbred_level|title }} inbreeding level"{% endif %}>
                                             <a href="/dogs/{{ dog.dam.sire.sire.sire.id }}" class="text-decoration-none">
                                                 {{ dog.dam.sire.sire.sire.name }}
                                             </a>
@@ -530,5 +540,39 @@
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load inbreeding highlighting for static pedigree template
+    const dogId = {{ dog.id }};
+    const generations = 4;
+    
+    // Fetch inbreeding data from API        fetch(`/api/dogs/${dogId}/pedigree/${generations}`)
+        .then(response => response.json())
+        .then(data => {
+            const inbreedingData = data.inbreeding_data || {};
+            
+            // Apply highlighting to all pedigree-dog elements that have data-dog-id
+            document.querySelectorAll('.pedigree-dog[data-dog-id]').forEach(element => {
+                const ancestorId = element.getAttribute('data-dog-id');
+                
+                if (inbreedingData[ancestorId]) {
+                    const inbredInfo = inbreedingData[ancestorId];
+                    const colorIndex = inbredInfo.color_index;
+                    
+                    // Add inbreeding class
+                    element.classList.add(`inbred-${colorIndex}`);
+                      // Add tooltip with inbreeding information
+                    const count = inbredInfo.count;
+                    const title = `Common ancestor - appears ${count} times in pedigree`;
+                    element.setAttribute('title', title);
+                }
+            });
+        })
+        .catch(error => {
+            // Silently handle errors - could add user-friendly error display here if needed
+        });
+});
+</script>
 
 {% endblock %}
