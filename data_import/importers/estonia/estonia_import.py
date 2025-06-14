@@ -295,7 +295,7 @@ def establish_parent_relationships(session: Session, records: List[Dict], dogId_
 def comprehensive_import():
     """Main import function - imports everything at once"""
     # JSON file path
-    json_file = Path(__file__).parent / 'data' / 'dalmatian_dogs_estoniа_27052025.json'
+    json_file = Path(__file__).parent / 'data' / 'estonia_dogs_converted.json'
     
     if not json_file.exists():
         raise FileNotFoundError(f"JSON file not found: {json_file}")

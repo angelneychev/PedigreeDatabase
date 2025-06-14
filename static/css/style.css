@@ -528,10 +528,10 @@
 }
 
 .pedigree-dog.inbred-6 {
-    background: linear-gradient(135deg, #fffff0 0%, #faf089 100%) !important;
-    border: 2px solid #d69e2e !important;
+    background: linear-gradient(135deg, #e6fffa 0%, #81e6d9 100%) !important;
+    border: 2px solid #319795 !important;
     color: #2d3748 !important;
-    box-shadow: 0 2px 8px rgba(214, 158, 46, 0.2) !important;
+    box-shadow: 0 2px 8px rgba(49, 151, 149, 0.2) !important;
 }
 
 /* Elegant cell styling for inbred ancestors */
@@ -603,10 +603,70 @@ td.inbred.inbred-5 {
 }
 
 td.inbred.inbred-6 { 
-    background: linear-gradient(135deg, #fffff0 0%, #faf089 100%) !important; 
-    border: 2px solid #d69e2e !important;
+    background: linear-gradient(135deg, #e6fffa 0%, #81e6d9 100%) !important; 
+    border: 2px solid #319795 !important;
     border-radius: 6px !important;
-    box-shadow: 0 2px 8px rgba(214, 158, 46, 0.15) !important;
+    box-shadow: 0 2px 8px rgba(49, 151, 149, 0.15) !important;
+}
+
+/* Additional inbred classes for higher numbers */
+.pedigree-dog.inbred-7 {
+    background: linear-gradient(135deg, #f7fafc 0%, #cbd5e0 100%) !important;
+    border: 2px solid #4a5568 !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(74, 85, 104, 0.2) !important;
+}
+
+.pedigree-dog.inbred-8 {
+    background: linear-gradient(135deg, #fed7e2 0%, #f687b3 100%) !important;
+    border: 2px solid #d53f8c !important;
+    color: #2d3748 !important;
+    box-shadow: 0 2px 8px rgba(213, 63, 140, 0.2) !important;
+}
+
+.pedigree-dog.inbred-9 {
+    background: linear-gradient(135deg, #e6fffa 0%, #4299e1 100%) !important;
+    border: 2px solid #2b6cb0 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.2) !important;
+}
+
+.pedigree-dog.inbred-10 {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%) !important;
+    border: 2px solid #c53030 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(197, 48, 48, 0.3) !important;
+}
+
+/* Table cell styles for higher inbred numbers */
+td.inbred.inbred-7 { 
+    background: linear-gradient(135deg, #f7fafc 0%, #cbd5e0 100%) !important; 
+    border: 2px solid #4a5568 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(74, 85, 104, 0.15) !important;
+}
+
+td.inbred.inbred-8 { 
+    background: linear-gradient(135deg, #fed7e2 0%, #f687b3 100%) !important; 
+    border: 2px solid #d53f8c !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(213, 63, 140, 0.15) !important;
+}
+
+td.inbred.inbred-9 { 
+    background: linear-gradient(135deg, #e6fffa 0%, #4299e1 100%) !important; 
+    border: 2px solid #2b6cb0 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.15) !important;
+    color: #ffffff !important;
+}
+
+td.inbred.inbred-10 {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%) !important; 
+    border: 2px solid #c53030 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(197, 48, 48, 0.15) !important;
+    color: #ffffff !important;
 }
 
 /* Elegant Inbreeding Legend Styles */
