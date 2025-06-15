@@ -80,79 +80,83 @@ Advanced coefficient of inbreeding (COI) analysis with visual highlighting:
 - MariaDB/MySQL server
 - pip (Python package manager)
 
-### Complete Startup Instructions
+### Quick Start (Windows)
 
-Follow these steps to get the Dalmatian Pedigree Database running on your system:
+**Simplest way - Double-click one of these files:**
+- `start.bat` - Regular startup (automatically handles venv)
+- `start_dev.bat` - Development mode (auto-creates venv if needed)
 
-#### 1. **Clone the Project**
-```bash
-git clone <repository-url>
-cd PedigreeDatabase
+**Or from command line:**
+```cmd
+start.bat
 ```
 
-#### 2. **Create and Activate Virtual Environment**
+### Manual Setup (All Platforms)
 
-**Windows PowerShell:**
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-**Linux/macOS:**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-> **Important**: Always activate the virtual environment before running or developing the project! You should see `(venv)` at the start of your terminal prompt when it is active.
-
-#### 3. **Install Dependencies**
-```bash
-pip install -r requirements.txt
-```
-
-#### 4. **Database Setup**
+#### 1. **Database Setup**
 Create the database in MariaDB/MySQL:
-```bash
-mysql -u root -p
-```
-Then in MySQL console:
 ```sql
 CREATE DATABASE pedigree_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-EXIT;
 ```
 
-#### 5. **Configure Database Connection**
-Edit the `database.py` file and update the DATABASE_URL:
+#### 2. **Configure Database Connection**
+Edit `database.py` and update the DATABASE_URL:
 ```python
 DATABASE_URL = "mysql+pymysql://root:YOUR_PASSWORD@localhost:3306/pedigree_db"
 ```
-Replace `YOUR_PASSWORD` with your MariaDB/MySQL root password.
 
-#### 6. **Create Database Tables**
+#### 3. **Virtual Environment (Recommended)**
+```bash
+# Create venv
+python -m venv venv
+
+# Activate (Windows)
+venv\Scripts\activate.bat
+
+# Activate (Linux/Mac)
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+#### 4. **Create Database Tables**
 ```bash
 python create_database.py
 ```
 
-#### 7. **Start the Application**
+#### 5. **Start Application**
+
+**Option A: Use batch files (Windows only)**
+```cmd
+start.bat          # Simple startup
+start_dev.bat      # Development mode with auto-setup
+```
+
+**Option B: Manual start (All platforms)**
+```bash
+python main.py
+```
+
+**Option C: Development with hot-reload**
 ```bash
 python -m uvicorn main:app --host 127.0.0.1 --port 8007 --reload
 ```
 
-#### 8. **Access the Application**
-Open your web browser and go to: `http://127.0.0.1:8007`
+### 🌐 Access Points
+- **Main App**: http://127.0.0.1:8007
+- **API Docs (Swagger)**: http://127.0.0.1:8007/docs
+- **API Docs (ReDoc)**: http://127.0.0.1:8007/redoc
+- **Health Check**: http://127.0.0.1:8007/health
 
----
+### 📋 Startup Methods Comparison
 
-**To deactivate the virtual environment later:**
-```bash
-deactivate
-```
-
-**To restart the application (after initial setup):**
-1. Navigate to project directory
-2. Activate virtual environment (step 2 above)
-3. Start the application (step 7 above)
+| Method | Use Case | Auto venv | Auto deps | Platform |
+|--------|----------|-----------|-----------|----------|
+| `start.bat` | Quick start | ✅ | ❌ | Windows |
+| `start_dev.bat` | Development | ✅ | ✅ | Windows |
+| `python main.py` | Manual | ❌ | ❌ | All |
+| uvicorn command | Development | ❌ | ❌ | All |
 
 ## 🧬 Dynamic Pedigree Matrix - Technical Implementation
 
@@ -574,6 +578,127 @@ The pedigree page uses localStorage (with sessionStorage and cookie fallback) to
 - Implementation summary and validation in `IMPLEMENTATION_COMPLETE.md`
 - Security: No sensitive data in storage, server-side validation
 - Performance: Fast AJAX, minimal payload, efficient caching
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues and Solutions
+
+#### Cannot Start the Application
+
+**Problem**: `start.bat` fails or shows "Python not found"
+```
+Solution: 
+1. Install Python 3.8+ and ensure it's in your PATH
+2. Try: python --version (should show Python version)
+3. If not found, reinstall Python with "Add to PATH" option
+```
+
+**Problem**: Virtual environment activation fails
+```
+Solution:
+1. Delete venv folder: rmdir /s venv
+2. Recreate: python -m venv venv
+3. Use start_dev.bat (auto-creates venv)
+```
+
+**Problem**: Database connection errors
+```
+Solution:
+1. Check MariaDB/MySQL is running
+2. Verify database exists: pedigree_db
+3. Check credentials in database.py
+4. Test connection: mysql -u root -p
+```
+
+#### Missing Dependencies
+
+**Problem**: "ModuleNotFoundError" when starting
+```
+Solution:
+1. Activate venv: venv\Scripts\activate.bat
+2. Install deps: pip install -r requirements.txt
+3. Or use start_dev.bat (auto-installs)
+```
+
+**Problem**: FastAPI or uvicorn not found
+```
+Solution:
+pip install fastapi uvicorn[standard]
+```
+
+#### Port Issues
+
+**Problem**: "Address already in use" on port 8007
+```
+Solution:
+1. Find process: netstat -ano | findstr :8007
+2. Kill process: taskkill /PID <process_id> /F
+3. Or change port in main.py
+```
+
+#### Template/Static File Issues
+
+**Problem**: CSS/JS files not loading or 404 errors
+```
+Solution:
+1. Check file paths in main.py are relative: templates/, static/
+2. Ensure you're in PedigreeDatabase directory when starting
+3. Use start.bat (handles directory automatically)
+```
+
+#### Virtual Environment Issues
+
+**Problem**: "(venv)" not showing in prompt
+```
+Solution:
+1. Close terminal and reopen
+2. Run: venv\Scripts\activate.bat
+3. Check: echo %VIRTUAL_ENV%
+```
+
+**Problem**: Permission denied on venv activation (PowerShell)
+```
+Solution:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### Performance Issues
+
+**Problem**: Slow pedigree loading for large genealogies
+```
+Solution:
+1. Reduce generation count in dropdown (start with 4-5)
+2. Check database has proper indexes
+3. Consider pagination for large datasets
+```
+
+### Development Issues
+
+**Problem**: Hot-reload not working in development
+```
+Solution:
+1. Use: python -m uvicorn main:app --reload
+2. Or modify main.py to add reload=True
+3. Ensure you're editing files in the correct directory
+```
+
+**Problem**: Database changes not reflected
+```
+Solution:
+1. Delete: dalmatian_pedigree.db
+2. Run: python create_database.py
+3. Re-import data if needed
+```
+
+### Getting Help
+
+If you encounter issues not covered here:
+1. Check the Git repository issues section
+2. Review the console output for error messages
+3. Ensure all prerequisites are properly installed
+4. Try the manual setup method if batch files fail
 
 ---
 

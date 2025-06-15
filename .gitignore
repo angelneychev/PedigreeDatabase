@@ -119,3 +119,37 @@ data_import/importers/*/logs/*.txt
 # Keep data directories but exclude their contents
 !data_import/importers/*/data/.gitkeep
 !data_import/importers/*/logs/.gitkeep
+
+# Prevent empty/temporary files that commonly appear
+*_temp.py
+*_test.py
+*_debug.py
+*_backup.py
+debug_*.py
+test_*.py
+temp_*.py
+analyze_*.py
+verify_*.py
+check_*.py
+quick_*.py
+final_*.py
+simple_*.py
+performance_*.py
+comprehensive_*.py
+cleanup_*.py
+show_*.py
+*.html.temp
+*.html.backup
+*.md.temp
+*.md.backup
+
+# Common empty files that appear during development
+COMPLETION_SUMMARY.md
+INBREEDING_FIX_SUMMARY.md
+SUCCESS_CONFIRMATION.py
+TEST_RESULTS_*.md
+IMPLEMENTATION_*.md
+
+# VS Code/IDE temporary files
+.vscode/settings.json.temp
+.vscode/launch.json.temp
