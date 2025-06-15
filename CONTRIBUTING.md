@@ -183,18 +183,19 @@ Thank you for your interest in contributing to the Dalmatian Pedigree Database p
    - Reference any related issues
    - Include screenshots for UI changes
 
-## 🧬 Core Features
+## 🧬 Development Guidelines by Feature
 
-### Dynamic Pedigree Matrix
-The core feature uses a binary path algorithm for ancestor positioning. When working on pedigree-related features:
+### Dynamic Pedigree Matrix Development
+When working on pedigree-related features:
 - Understand the recursive database loading approach
 - Test with multiple generation levels (1-9)
 - Ensure matrix structure remains consistent
+- Follow the binary path algorithm for ancestor positioning
 
-### Inbreeding Analysis & COI System
-The COI (Coefficient of Inbreeding) highlighting system provides visual analysis of common ancestors:
+### Inbreeding Analysis & COI Development
+Technical development guidelines for the COI (Coefficient of Inbreeding) system:
 
-#### Key Components:
+#### Key Development Components:
 - **Backend**: `detect_pedigree_inbreeding()` in `utils.py` - detects common ancestors
 - **API**: Enhanced pedigree endpoint returns `inbreeding_data` with highlighting info
 - **Frontend**: JavaScript processes inbreeding data and applies visual highlighting
@@ -203,7 +204,7 @@ The COI (Coefficient of Inbreeding) highlighting system provides visual analysis
 #### Testing COI Features:
 ```bash
 # Test API endpoint
-curl http://localhost:8007/api/dogs/{Id}}/pedigree/4
+curl http://localhost:8007/api/dogs/{dog_id}/pedigree/4
 
 # Expected response includes:
 # "inbreeding_data": {
@@ -287,9 +288,9 @@ For new features:
 3. Consider implementation complexity
 4. Provide mockups for UI features
 
-## 🔧 Troubleshooting
+## 🔧 Development Troubleshooting
 
-### Common Issues
+### Common Development Issues
 
 **COI Highlighting Not Working:**
 ```bash
