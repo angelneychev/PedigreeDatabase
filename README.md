@@ -577,6 +577,23 @@ The pedigree page uses localStorage (with sessionStorage and cookie fallback) to
 
 ---
 
+## 🧹 Project Cleanup (Latest)
+
+### Repository Optimization
+- **June 15, 2025**: Comprehensive cleanup of empty and duplicate files
+- Removed 12 empty tracked files from Git repository
+- Cleaned duplicate files from parent directory structure
+- Enhanced inbreeding color visualization with distinct color palette
+- Repository now contains only functional code (41 core files)
+
+### Color System Improvements
+- Fixed inbreeding level color conflicts in pedigree visualization
+- Updated CSS with distinct colors for inbreeding levels 1-10
+- Improved visual distinction between common ancestors
+- Enhanced user experience for complex pedigree analysis
+
+---
+
 **For contributors:**
 - Review the mobile/UX implementation summary before working on pedigree or UI features
 - Test all changes for mobile compatibility and offline/online switching
