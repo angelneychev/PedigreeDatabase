@@ -128,8 +128,23 @@ Thank you for your interest in contributing to the Dalmatian Pedigree Database p
 
 ## 🛠️ Getting Started for Contributors
 
-### Quick Start
-For detailed setup instructions, see the **"🚀 How to Start the Project"** section above.
+# Contributing to Dalmatian Pedigree Database
+
+Thank you for your interest in contributing to the Dalmatian Pedigree Database project! This document provides guidelines for contributing to the project.
+
+## 🛠️ Getting Started for Contributors
+
+### Prerequisites for Development
+- Python 3.8+
+- MariaDB/MySQL server
+- Git
+- Code editor (VS Code recommended)
+- Basic knowledge of FastAPI, SQLAlchemy, HTML/CSS
+
+### Quick Setup for Development
+1. **Fork and clone** the repository
+2. **Follow setup instructions** in README.md to get the project running
+3. **Create development branch**: `git checkout -b feature/your-feature-name`
 
 ### Development Workflow
 1. Follow the complete setup instructions above
